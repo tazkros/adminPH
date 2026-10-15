@@ -1,0 +1,24 @@
+# Opción "Render": suba el proyecto a GitHub (repositorio PRIVADO) y use "New > Blueprint".
+services:
+  - type: web
+    name: adminph
+    runtime: docker
+    dockerfilePath: ./despliegue/Dockerfile
+    dockerContext: .
+    plan: starter          # el plan gratuito se "duerme": NO sirve para una asamblea
+    healthCheckPath: /api/docs
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+      - key: DATABASE_SSL
+        value: "true"
+      - key: JWT_SECRET
+        generateValue: true
+      - key: QR_SIGNING_SECRET
+        generateValue: true
+      - key: PUBLIC_APP_URL
+        sync: false
+      - key: CORS_ORIGINS
+        sync: false
+      - key: FRONTEND_DIR
+        value: /app/frontend
