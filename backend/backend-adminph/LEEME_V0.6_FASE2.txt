@@ -1,0 +1,57 @@
+AdminPH Backend V0.6 — FASE 2A: Asamblea + Asistencia
+=======================================================
+
+OBJETIVO
+- Conectar Toma de Asistencia con PostgreSQL.
+- Localizar automáticamente la asamblea del conjunto activo.
+- Hacer que GET de asistencia devuelva TODAS las unidades activas, incluso las que todavía no tienen una fila de attendance.
+- Al marcar una unidad presente, el backend genera/reutiliza su QR firmado.
+- Al marcarla ausente, el backend revoca el QR activo.
+
+IMPORTANTE
+- Esta versión NO requiere ejecutar una migración SQL nueva.
+- Conserve su archivo .env actual.
+- No borre tablas ni vuelva a ejecutar migraciones anteriores.
+
+INSTALACIÓN
+1. Detenga el backend con Ctrl+C.
+2. Haga una copia de seguridad de su carpeta backend actual.
+3. Copie/reemplace los archivos de esta V0.6 sobre el backend actual.
+4. Conserve el .env que ya funciona.
+5. Ejecute:
+   npm run build
+   npm run start:dev
+
+PRUEBA EN SWAGGER ANTES DE CAMBIAR EL FRONTEND
+1. POST /api/auth/login
+2. Authorize con el JWT.
+3. Pruebe:
+   GET /api/assemblies/property/00000000-0000-0000-0000-000000000010/current
+
+RESULTADO ESPERADO
+Debe devolver una asamblea, por ejemplo:
+{
+  "id": "...",
+  "propertyId": "00000000-0000-0000-0000-000000000010",
+  "name": "...",
+  "status": "active",
+  "active": true,
+  "raw": { ... }
+}
+
+Si devuelve null, NO es un error del backend: significa que ese conjunto todavía no tiene una asamblea creada en PostgreSQL. En ese caso deténgase y comparta el resultado antes de instalar el frontend V0.6; el siguiente ajuste será crear/sincronizar la asamblea desde la configuración.
+
+Si devuelve una asamblea, pruebe también:
+GET /api/assemblies/{assemblyId}/attendance
+
+Ahora debe devolver todas las unidades activas del conjunto, aunque estén ausentes y aún no tengan registro previo de asistencia.
+
+NUEVOS ENDPOINTS
+GET /api/assemblies/property/:propertyId
+GET /api/assemblies/property/:propertyId/current
+
+ENDPOINTS YA EXISTENTES QUE AHORA USA EL FRONTEND
+GET /api/assemblies/:assemblyId/attendance
+PUT /api/assemblies/:assemblyId/attendance/:unitId
+GET /api/assemblies/:assemblyId/qr-tokens
+POST /api/assemblies/:assemblyId/attendance/:unitId/qr/reissue
