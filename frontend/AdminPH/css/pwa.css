@@ -1,0 +1,9 @@
+/* AdminPH · ajustes para uso como app en el teléfono */
+html { -webkit-tap-highlight-color: transparent; -webkit-text-size-adjust: 100%; }
+body { overscroll-behavior-y: none; }
+.main-header { padding-top: env(safe-area-inset-top); }
+.app-foot, .sb-foot { padding-bottom: calc(8px + env(safe-area-inset-bottom)); }
+@media (max-width: 900px) {
+  input, select, textarea { font-size: 16px; }
+  .main-content table { display: block; overflow-x: auto; }
+}

@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#1f5c43">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="AdminPH">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<title>AdminPH - Sistema de Asambleas PH | Ley 675/2001</title>
+<link rel="stylesheet" href="css/style.css?v=4.1">
+<link rel="stylesheet" href="css/pwa.css?v=4.1">
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+    <!-- AdminPH: CSS y JavaScript separados para compatibilidad con VS Code/Live Server -->
+<script src="js/pwa.js" defer></script>
+</head>
+<body>
+
+<div id="loginContainer" class="login-container">
+    <div class="login-card">
+        <h2>🏢 AdminPH</h2>
+        <p>Ley 675 de 2001 - Propiedad Horizontal</p>
+        <input type="text" id="loginUser" placeholder="Usuario" autocomplete="username">
+        <input type="password" id="loginPass" placeholder="Contraseña" autocomplete="current-password">
+        <button id="loginBtn">Ingresar</button>
+
+        <div id="loginMsg" style="margin-top:12px;font-size:12px;color:#b3261e;min-height:16px;"></div>
+    </div>
+</div>
+
+<div id="dashboardContainer" class="dashboard">
+    <div class="sb-backdrop" id="sbBackdrop"></div>
+    <aside class="sidebar" id="sidebar">
+        <a class="sb-brand" href="?modulo=inicio" data-go="home">
+            <span class="logo-circle">🏢</span>
+            <span class="sb-brand-text"><strong>AdminPH</strong><small>Ley 675 de 2001 · Propiedad Horizontal</small></span>
+        </a>
+        <nav class="sb-nav" id="sbNav">
+            <a class="sb-item sb-home" href="?modulo=inicio" data-go="home"><span class="ic">🏠</span> Inicio</a>
+
+            <div class="sb-group open" data-group="asamblea">
+                <button type="button" class="sb-group-title"><span>📌 Asamblea</span><i class="chev">›</i></button>
+                <div class="sb-group-body">
+                    <div class="fase-selector" id="faseSelector">
+                        <button class="fase-btn fase-1" data-fase="1"><i class="dot"></i>Fase 1 · Preparación</button>
+                        <button class="fase-btn fase-2" data-fase="2"><i class="dot"></i>Fase 2 · Inicio de asamblea</button>
+                        <button class="fase-btn fase-3" data-fase="3"><i class="dot"></i>Fase 3 · Desarrollo</button>
+                        <button class="fase-btn fase-4" data-fase="4"><i class="dot"></i>Fase 4 · Acta y trazabilidad</button>
+                        <div class="nav-menu" id="navMenu"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sb-group" data-group="area">
+                <button type="button" class="sb-group-title"><span>🗂️ Área administrativa</span><i class="chev">›</i></button>
+                <div class="sb-group-body">
+                    <a class="sb-item" href="?modulo=reuniones" data-go="area:reuniones"><span class="ic">🎥</span> Reuniones virtuales</a>
+                    <a class="sb-item" href="?modulo=documentos" data-go="area:documentos"><span class="ic">🗄️</span> Gestor documental <em class="tag">pronto</em></a>
+                    <a class="sb-item" href="?modulo=reportes" data-go="area:reportes"><span class="ic">📊</span> Reportes y estadísticas <em class="tag">pronto</em></a>
+                    <a class="sb-item" href="?modulo=agenda" data-go="area:agenda"><span class="ic">📅</span> Agenda</a>
+                    <a class="sb-item" id="sbAdminUsers" href="?modulo=admin" data-go="area:admin" style="display:none"><span class="ic">👑</span> Administrar usuarios</a>
+                </div>
+            </div>
+
+            <div class="sb-group" data-group="ayuda">
+                <button type="button" class="sb-group-title"><span>📚 Ayuda y recursos</span><i class="chev">›</i></button>
+                <div class="sb-group-body">
+                    <a class="sb-item" href="manual.html" target="_blank" rel="noopener"><span class="ic">📘</span> Manual de usuario</a>
+                    <a class="sb-item" href="diccionario.html" target="_blank" rel="noopener"><span class="ic">📖</span> Diccionario PH</a>
+                    <a class="sb-item" href="simulador-cuotas.html" target="_blank" rel="noopener"><span class="ic">🧮</span> Simulador de cuotas (anexo)</a>
+                    <a class="sb-item" href="panel-votacion.html"><span class="ic">🗳️</span> Panel de votación en vivo</a>
+                    <a class="sb-item" href="diagnostico.html" target="_blank" rel="noopener"><span class="ic">🩺</span> Diagnóstico de conexión</a>
+                </div>
+            </div>
+        </nav>
+        <div class="sb-foot">© 2026 AdminPH<br><small>Juan Carlos Castro · 310 778 7733</small></div>
+    </aside>
+
+    <div class="app-body">
+        <header class="main-header">
+            <button type="button" class="sb-toggle" id="sbToggle" title="Mostrar u ocultar el menú">☰</button>
+            <div class="logo"><h1 id="pageTitle">AdminPH</h1><p>Sistema de asambleas · Ley 675 de 2001</p></div>
+            <div class="user-info"><span id="userNameDisplay"></span><span id="userRoleBadge"></span><button class="btn-logout" id="logoutBtn">Salir</button></div>
+        </header>
+        <main class="main-content" id="mainContent"></main>
+        <footer class="app-foot">
+            <p>© 2026 AdminPH - Basado en Ley 675 de 2001</p>
+            <div>Desarrollado por <strong>Juan Carlos Castro</strong> - Fullstack Developer · 📞 310 778 7733 · ✉️ info@profesionalesdevida.com</div>
+        </footer>
+    </div>
+</div>
+
+<div id="qrModal" class="modal"><div class="modal-content"><h3>🔐 Código QR de la Unidad</h3><div id="modalQrCode" style="display:flex; justify-content:center;"></div><p id="modalQrInfo"></p><button onclick="document.getElementById('qrModal').style.display='none'">Cerrar</button></div></div>
+
+<div class="fase-indicador" id="faseIndicador">📋 FASE 1: Preparación</div>
+
+<script src="js/config.js?v=1.0"></script>
+<script src="js/api.js?v=4.0"></script>
+<script src="js/xlsxmini.js?v=4.2"></script>
+<script src="js/visor-archivos.js?v=4.2"></script>
+<script src="js/agenda.js?v=4.2"></script>
+<!-- Patch V1: pantalla pública de votación por QR (?voteToken=...). Debe ir ANTES de app.js -->
+<script src="js/voto-publico.js?v=4.0"></script>
+<script src="js/puente-backend.js?v=4.0"></script>
+<script src="js/app.js?v=4.0"></script>
+</body>
+</html>

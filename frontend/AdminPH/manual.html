@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Manual de usuario · AdminPH</title>
+<style>
+:root{
+  --bg:#f3f7f4; --card:#fff; --ink:#1f2d24; --muted:#5a6b60; --line:#dce7df;
+  --g1:#1f5c43; --g2:#2d6a4f; --g3:#40916c; --soft:#e8f5ec;
+  --warn:#b45309; --warnbg:#fff7ed; --info:#1e40af; --infobg:#eff6ff; --bad:#b91c1c; --badbg:#fef2f2;
+  --code:#14201a; --codeink:#d6f5e3; --radius:16px; --shadow:0 2px 10px rgba(31,92,67,.09);
+}
+@media (prefers-color-scheme: dark){
+  :root{--bg:#0e1712;--card:#15231b;--ink:#e5f0e9;--muted:#9db3a5;--line:#25382c;--g1:#0f3a29;--g2:#3f9a72;--g3:#59b98f;--soft:#173226;
+  --warnbg:#3a2a12;--warn:#fbbf24;--infobg:#132a4d;--info:#93c5fd;--badbg:#3a1616;--bad:#fca5a5;--shadow:none}
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:70px}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.7 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+a{color:var(--g2)}
+header.hero{background:linear-gradient(135deg,var(--g1),var(--g3));color:#fff;padding:34px 20px;text-align:center}
+header.hero h1{margin:0 0 6px;font-size:clamp(1.6rem,4.5vw,2.4rem)}
+header.hero p{margin:0;opacity:.92}
+.top{position:sticky;top:0;z-index:30;background:var(--g1);flex-wrap:wrap;display:flex;gap:10px;align-items:center;justify-content:space-between;padding:8px 16px}
+.top a{color:#fff;text-decoration:none;font-weight:600;font-size:.9rem;padding:7px 13px;border-radius:9px;background:rgba(255,255,255,.14)}
+.top a:hover{background:rgba(255,255,255,.28)}
+.top .title{color:#fff;font-weight:700}
+.layout>main{min-width:0}
+.layout{max-width:1200px;margin:auto;padding:22px 16px 40px;display:grid;grid-template-columns:260px 1fr;gap:24px}
+nav.toc{position:sticky;top:64px;align-self:start;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:14px;box-shadow:var(--shadow);max-height:calc(100vh - 84px);overflow:auto}
+nav.toc h2{font-size:.8rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin:0 0 8px}
+nav.toc ol{list-style:none;margin:0;padding:0;counter-reset:n}
+nav.toc li{counter-increment:n}
+nav.toc a{display:flex;gap:8px;padding:6px 8px;border-radius:8px;text-decoration:none;color:var(--ink);font-size:.9rem}
+nav.toc a::before{content:counter(n);background:var(--soft);color:var(--g2);font-weight:700;border-radius:99px;min-width:22px;height:22px;display:inline-grid;place-items:center;font-size:.75rem}
+nav.toc a:hover,nav.toc a.on{background:var(--soft)}
+.progress{height:6px;background:var(--line);border-radius:99px;margin:10px 0 0;overflow:hidden}
+.progress i{display:block;height:100%;width:0;background:var(--g3);transition:width .2s}
+.plabel{font-size:.78rem;color:var(--muted);margin-top:4px}
+section.step{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);margin-bottom:22px;box-shadow:var(--shadow);overflow:hidden}
+section.step>h2{margin:0;padding:18px 22px;background:var(--soft);border-bottom:2px solid var(--line);color:var(--g2);font-size:1.35rem;display:flex;gap:12px;align-items:center}
+section.step>h2 .num{background:var(--g2);color:#fff;border-radius:99px;min-width:34px;height:34px;display:grid;place-items:center;font-size:1rem}
+.in{padding:20px 22px}
+.in h3{margin:20px 0 6px;font-size:1.05rem;color:var(--g2)}
+.in p{margin:.5rem 0}
+.in ol,.in ul{padding-left:1.3rem;margin:.5rem 0}
+.in li{margin:.3rem 0}
+.note,.warn,.tip,.bad{border-left:5px solid var(--g3);background:var(--soft);padding:12px 16px;border-radius:10px;margin:14px 0;font-size:.95rem}
+.warn{border-color:var(--warn);background:var(--warnbg)}
+.tip{border-color:var(--info);background:var(--infobg)}
+.bad{border-color:var(--bad);background:var(--badbg)}
+.note strong:first-child,.warn strong:first-child,.tip strong:first-child,.bad strong:first-child{display:block;margin-bottom:2px}
+pre,code{font-family:ui-monospace,Consolas,"Courier New",monospace}
+pre{background:var(--code);color:var(--codeink);padding:12px 14px;border-radius:10px;overflow-x:auto;font-size:.88rem;margin:10px 0}
+code.i{background:var(--soft);color:var(--g2);padding:1px 6px;border-radius:6px;font-size:.88em}
+.tblwrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px;margin:12px 0}
+table{width:100%;border-collapse:collapse;font-size:.92rem}
+th{background:var(--g2);color:#fff;text-align:left;padding:10px 12px}
+td{padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+tr:last-child td{border-bottom:0}
+.badge{display:inline-block;font-size:.72rem;font-weight:700;border-radius:99px;padding:2px 10px;background:var(--soft);color:var(--g2)}
+.flow{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:14px 0}
+.flow div{background:var(--soft);border:1px solid var(--line);border-radius:12px;padding:12px;text-align:center;font-size:.9rem}
+.flow b{display:block;color:var(--g2)}
+.check{list-style:none;padding:0!important}
+.check li{display:flex;gap:10px;align-items:flex-start;padding:8px 10px;border-radius:9px}
+.check li:hover{background:var(--soft)}
+.check input{margin-top:.4rem;width:18px;height:18px;accent-color:var(--g2)}
+.check label{cursor:pointer;flex:1}
+details.faq{border:1px solid var(--line);border-radius:12px;margin:8px 0;background:var(--card)}
+details.faq summary{cursor:pointer;padding:12px 14px;font-weight:650}
+details.faq div{padding:0 16px 14px}
+.contact{background:linear-gradient(135deg,var(--g1),var(--g3));color:#fff;border-radius:var(--radius);padding:22px;text-align:center}
+.contact a{color:#fff}
+footer{background:var(--g1);color:#d3eadd;text-align:center;padding:18px;font-size:.85rem}
+.btnrow{display:flex;gap:10px;flex-wrap:wrap;margin:14px 0}
+.btn{font:inherit;font-weight:600;border:0;border-radius:10px;padding:9px 16px;cursor:pointer;background:var(--g2);color:#fff;text-decoration:none;display:inline-block}
+.btn.sec{background:var(--soft);color:var(--g2)}
+nav.toc li.g{counter-increment:none}
+nav.toc li.g a::before{content:attr(data-n);background:#fde68a;color:#78350f;min-width:26px}
+section.step>h2 .gnum{background:#b45309}
+.gchk{list-style:none;padding:0!important}
+.gchk li{display:flex;gap:10px;align-items:flex-start;padding:7px 10px;border-radius:9px}
+.gchk li:hover{background:var(--soft)}
+.gchk input{margin-top:.4rem;width:18px;height:18px;accent-color:var(--g2)}
+.gchk label{flex:1;cursor:pointer}
+@media (max-width:900px){
+  .layout{grid-template-columns:minmax(0,1fr)}
+  .top a{padding:6px 9px;font-size:.82rem}
+  nav.toc{position:static;max-height:none}
+}
+@media print{.top,nav.toc,.btnrow{display:none}.layout{display:block}section.step{break-inside:avoid;box-shadow:none}}
+</style>
+</head>
+<body>
+
+<div class="top">
+  <span class="title">📘 AdminPH · Manual</span>
+  <span>
+    <a href="diccionario.html">📖 Diccionario PH</a>
+    <a href="index.html">🏠 Volver al sistema</a>
+  </span>
+</div>
+
+<header class="hero">
+  <h1>Manual de usuario paso a paso</h1>
+  <p>Cómo preparar, realizar y cerrar una asamblea de propiedad horizontal con votación por QR</p>
+</header>
+
+<div class="layout">
+<nav class="toc" aria-label="Contenido">
+  <h2>Ruta del manual</h2>
+  <ol id="tocList">
+    <li><a href="#s0">Cómo funciona el sistema</a></li>
+    <li><a href="#s1">Preparar el servidor (antes de todo)</a></li>
+    <li><a href="#s2">Ingresar y roles</a></li>
+    <li><a href="#s3">Configurar la copropiedad</a></li>
+    <li><a href="#s4">Fase 1 · Servidor y Asamblea</a></li>
+    <li><a href="#s5">Fase 2 · Asistencia y QR</a></li>
+    <li><a href="#s6">Fase 3 · Votaciones</a></li>
+    <li><a href="#s7">Fase 4 · Cierre y acta</a></li>
+    <li><a href="#s8">Reglas legales clave</a></li>
+    <li><a href="#s9">Lista del día de la asamblea</a></li>
+    <li><a href="#s10">Solución de problemas</a></li>
+<li class="g"><a href="#g0" data-n="G">Cómo usar esta guía</a></li>
+<li class="g"><a href="#g1" data-n="G1">Qué es el sistema y qué piezas tiene</a></li>
+<li class="g"><a href="#g2" data-n="G2">Encender el sistema (INICIAR_ADMINPH.bat)</a></li>
+<li class="g"><a href="#g3" data-n="G3">El túnel de Cloudflare y la dirección pública</a></li>
+<li class="g"><a href="#g4" data-n="G4">Usuarios, contraseñas y operadores</a></li>
+<li class="g"><a href="#g5" data-n="G5">Preparar y realizar una asamblea</a></li>
+<li class="g"><a href="#g6" data-n="G6">Enviar los QR por correo y por WhatsApp</a></li>
+<li class="g"><a href="#g7" data-n="G7">Ver lo mismo en un segundo computador</a></li>
+<li class="g"><a href="#g8" data-n="G8">Copias de seguridad y recuperación</a></li>
+<li class="g"><a href="#g9" data-n="G9">Borrar asambleas y dejar la plataforma limpia</a></li>
+<li class="g"><a href="#g10" data-n="G10">Actualizar el sistema y usarlo en otros computadores</a></li>
+<li class="g"><a href="#g11" data-n="G11">Problemas frecuentes y mensajes de error</a></li>
+<li class="g"><a href="#g12" data-n="G12">Listas de chequeo</a></li>
+<li class="g"><a href="#g13" data-n="G13">Seguridad y qué cambiará al subir el sistema a internet</a></li>
+<li class="g"><a href="#g14" data-n="G14">Novedades de la versión 3.5</a></li>
+<li class="g"><a href="#g15" data-n="G15">Publicar AdminPH en internet (Supabase + servidor)</a></li>
+<li class="g"><a href="#g16" data-n="G16">Novedades de la versión 3.6: votación manual y carga de unidades</a></li>
+<li class="g"><a href="#g17" data-n="G17">Novedades de la versión 3.7: apoderados con un solo QR</a></li>
+<li class="g"><a href="#g18" data-n="G18">Novedades de la versión 3.8: apoderado único, Excel por punto y evidencia</a></li>
+<li class="g"><a href="#g19" data-n="G19">Novedades de la versión 3.9: Excel de votación mejorado y panel en vivo</a></li>
+<li class="g"><a href="#g20" data-n="G20">Novedades de la versión 4.0: menú lateral, Ayuda y recursos, versiones</a></li>
+<li class="g"><a href="#g21" data-n="G21">Novedades de la versión 4.1: app en el teléfono y simulador de cuotas</a></li>
+<li class="g"><a href="#g22" data-n="G22">Novedades de la versión 4.2: agenda, reuniones virtuales, anexos del acta y visor de archivos</a></li>
+    <li><a href="#s11">Soporte</a></li>
+  </ol>
+  <div class="progress"><i id="bar"></i></div>
+  <div class="plabel" id="plabel">Lista del día: 0%</div>
+</nav>
+
+<main>
+
+<section class="step" id="s0">
+  <h2><span class="num">1</span>Cómo funciona el sistema</h2>
+  <div class="in">
+    <p>AdminPH lleva la asamblea en cuatro fases: <strong>1) Servidor y Asamblea</strong>, <strong>2) Asistencia y QR</strong>, <strong>3) Votaciones</strong> y <strong>4) Cierre y acta</strong>. Cada unidad recibe un código QR; el propietario lo escanea con su celular y vota. Los votos llegan al servidor y se guardan en la base de datos PostgreSQL.</p>
+    <div class="flow">
+      <div><b>📱 Celulares</b>escanean el QR y votan</div>
+      <div><b>☁️ Túnel Cloudflare</b>dirección pública https</div>
+      <div><b>💻 Computador de la administración</b>backend + página</div>
+      <div><b>🗄️ PostgreSQL</b>guarda unidades, asistencia y votos</div>
+    </div>
+    <div class="note"><strong>Idea clave</strong>El computador donde corre el servidor debe permanecer <b>encendido, conectado a internet y sin suspenderse</b> mientras dura la asamblea.</div>
+    <p>Si algo no aparece con este nombre exacto en su pantalla, busque el botón equivalente: los textos pueden variar levemente entre versiones.</p>
+  </div>
+</section>
+
+<section class="step" id="s1">
+  <h2><span class="num">2</span>Preparar el servidor (antes de todo)</h2>
+  <div class="in">
+    <p>Haga esto <strong>el día anterior</strong> y repítalo (solo el arranque) cada vez que encienda el equipo.</p>
+    <ol>
+      <li><strong>Encienda PostgreSQL</strong> (debe estar corriendo el servicio).</li>
+      <li>Abra una terminal en la carpeta del backend y ejecute <code class="i">npm run start:dev</code>. Espere el mensaje de que el servidor está escuchando y de que sirve el frontend.</li>
+      <li>Abra en el navegador del computador <code class="i">http://localhost:3000/</code> (no use la dirección de Live Server para la asamblea real).</li>
+      <li>En otra terminal inicie el túnel: <pre>cloudflared tunnel --url http://localhost:3000</pre> Copie la dirección que termina en <code class="i">trycloudflare.com</code>.</li>
+      <li>Pruebe esa dirección desde un celular con <b>datos móviles</b> (sin wifi): debe abrir la página.</li>
+    </ol>
+    <div class="warn"><strong>La dirección del túnel cambia</strong>Si cierra la ventana de cloudflared o reinicia el computador, la dirección nueva será distinta y los QR ya impresos dejarán de funcionar. Por eso: no cierre esa ventana y <b>genere e imprima los QR con la dirección definitiva</b> (paso 6).</div>
+    <div class="bad"><strong>Seguridad</strong>Antes de publicar el sistema cambie las contraseñas de los usuarios iniciales y las claves de la base de datos. Las instrucciones están en el archivo <code class="i">LEEME_V3_ASAMBLEA_REAL.md</code> del paquete. No comparta contraseñas por chat ni en pantallazos.</div>
+  </div>
+</section>
+
+<section class="step" id="s2">
+  <h2><span class="num">3</span>Ingresar y roles</h2>
+  <div class="in">
+    <p>Ingrese con su usuario y contraseña. El sistema valida contra el servidor: si no puede conectarse, verá un mensaje en la pantalla de acceso.</p>
+    <div class="tblwrap"><table>
+      <tr><th>Rol</th><th>Qué puede hacer</th></tr>
+      <tr><td><strong>Superadministrador</strong></td><td>Todo: usuarios, configuración, servidor y copias de seguridad.</td></tr>
+      <tr><td><strong>Administrador</strong></td><td>Configura la copropiedad, crea y cierra asambleas, gestiona votaciones.</td></tr>
+      <tr><td><strong>Operador</strong></td><td>Registra asistencia, entrega QR y opera las votaciones el día de la asamblea.</td></tr>
+      <tr><td><strong>Usuario</strong></td><td>Consulta información y resultados según permisos.</td></tr>
+    </table></div>
+    <div class="tip"><strong>Recomendación</strong>Dé el rol de <b>Operador</b> a quien atiende la mesa de registro; no comparta la cuenta del administrador.</div>
+  </div>
+</section>
+
+<section class="step" id="s3">
+  <h2><span class="num">4</span>Configurar la copropiedad</h2>
+  <div class="in">
+    <p>Se hace <strong>una sola vez</strong> y sirve para todas las asambleas futuras.</p>
+    <h3>4.1 Niveles jerárquicos</h3>
+    <p>Defina cómo se organiza el conjunto: por ejemplo Torre → Piso → Apartamento, o Manzana → Casa. Cada nivel tiene un prefijo.</p>
+    <h3>4.2 Formato de unidad</h3>
+    <p>El formato usa <code class="i">{NIVEL}{UNIDAD}</code>: el prefijo del nivel más el número de la unidad.</p>
+    <div class="tblwrap"><table>
+      <tr><th>Formato</th><th>Nivel</th><th>Unidad</th><th>Resultado</th></tr>
+      <tr><td><code class="i">{NIVEL}{UNIDAD}</code></td><td>1</td><td>01, 02, 03</td><td>101, 102, 103</td></tr>
+      <tr><td><code class="i">T{NIVEL}-{UNIDAD}</code></td><td>2</td><td>05</td><td>T2-05</td></tr>
+    </table></div>
+    <h3>4.3 Generar y revisar unidades</h3>
+    <ol>
+      <li>Genere las unidades con la herramienta de generación (101, 102… por nivel) o cárguelas desde Excel.</li>
+      <li>Complete <b>propietario, documento y coeficiente</b> de cada unidad.</li>
+      <li>Verifique que <b>la suma de coeficientes sea 100%</b>. Un error aquí altera quórum y votaciones por coeficiente.</li>
+      <li>Marque las unidades en mora <b>solo con certificación del administrador</b> (ver Reglas legales).</li>
+    </ol>
+    <div class="note"><strong>Revise dos veces</strong>Compare el listado con el reglamento y con la última acta. Los errores de coeficientes son la causa más común de discusiones en la asamblea.</div>
+  </div>
+</section>
+
+<section class="step" id="s4">
+  <h2><span class="num">5</span>Fase 1 · Servidor y Asamblea <span class="badge">antes del día</span></h2>
+  <div class="in">
+    <p>Aquí se conecta la página con el servidor y se crea la asamblea. Siga el orden de los bloques:</p>
+    <ol>
+      <li><b>Conectar al servidor.</b> Debe aparecer “Servidor conectado”. Si falla, vaya a Solución de problemas.</li>
+      <li><b>Enviar las unidades al servidor.</b> Así quedan guardadas en PostgreSQL. Espere la confirmación.</li>
+      <li><b>Crear la asamblea:</b> nombre, fecha, tipo (ordinaria o extraordinaria) y orden del día.</li>
+      <li><b>Dirección pública para los QR.</b> Pegue la dirección https del túnel y guárdela. Los QR se generarán con esa dirección. <b>Nunca imprima QR con localhost o con una IP local</b>: no abren desde otros celulares.</li>
+      <li><b>Copia de seguridad en el servidor.</b> Haga una copia ahora y otra antes de abrir cada votación. Si cambia de navegador o de computador, restaure desde aquí.</li>
+      <li><b>Iniciar la asamblea</b> cuando comience la sesión.</li>
+    </ol>
+    <div class="tip"><strong>Monitor en pantalla</strong>El panel de votación en vivo (<code class="i">panel-votacion.html</code>) sirve para proyectar resultados; es solo de lectura y no permite administrar.</div>
+    <div class="warn"><strong>Un navegador, una fuente</strong>Los datos locales dependen del navegador. Trabaje siempre en el mismo navegador y en la misma dirección (<code class="i">http://localhost:3000/</code>); si cambia, use la restauración de copia.</div>
+  </div>
+</section>
+
+<section class="step" id="s5">
+  <h2><span class="num">6</span>Fase 2 · Asistencia y QR <span class="badge">día de la asamblea</span></h2>
+  <div class="in">
+    <ol>
+      <li>Registre la llegada de cada propietario en la mesa de registro, unidad por unidad.</li>
+      <li>Si asiste un <b>apoderado</b>, registre su nombre y documento y verifique el poder escrito.</li>
+      <li>Entregue o muestre el <b>QR de la unidad</b>. Hay un QR activo por unidad en cada asamblea; sirve para todas las votaciones de esa asamblea.</li>
+      <li>Confirme el <b>quórum</b> en pantalla antes de comenzar. Con más de la mitad de los coeficientes presentes se puede sesionar (ver Reglas legales).</li>
+      <li>Si alguien pierde el QR, genere uno nuevo de la unidad: el anterior deja de servir.</li>
+    </ol>
+    <div class="note"><strong>Un voto por unidad</strong>Cada unidad vota una sola vez por votación, aunque haya varios propietarios o el QR se comparta.</div>
+  </div>
+</section>
+
+<section class="step" id="s6">
+  <h2><span class="num">7</span>Fase 3 · Votaciones <span class="badge">día de la asamblea</span></h2>
+  <div class="in">
+    <h3>7.1 Tipos de votación</h3>
+    <div class="tblwrap"><table>
+      <tr><th>Modalidad</th><th>Cuándo usarla</th><th>Cómo cuenta</th></tr>
+      <tr><td><strong>Nominal</strong></td><td>Elegir personas (presidente, consejo, comité, revisor) o cuando se requiere saber quién votó qué.</td><td>Un voto por unidad.</td></tr>
+      <tr><td><strong>Por coeficiente</strong></td><td>Presupuesto, cuotas, reformas y decisiones que dependen del peso de cada unidad.</td><td>Suma el coeficiente de cada unidad que vota.</td></tr>
+      <tr><td><strong>A mano alzada</strong></td><td>Temas simples o cuando falla el QR.</td><td>Se cuenta en sala; use el conteo por coeficiente si la decisión lo exige.</td></tr>
+    </table></div>
+    <h3>7.2 Paso a paso de una votación</h3>
+    <ol>
+      <li>Cree la votación: enunciado claro, opciones (Sí/No o candidatos) y modalidad.</li>
+      <li>Para elección de personas, los candidatos se toman de los asistentes.</li>
+      <li>Verifique el enunciado con el presidente de la asamblea.</li>
+      <li><b>Abra la votación.</b> Los propietarios escanean el QR y votan desde el celular.</li>
+      <li>Observe la participación en el monitor. Cuando terminen o venza el tiempo, <b>cierre la votación</b>.</li>
+      <li>Lea el resultado en voz alta y confirme con el presidente.</li>
+    </ol>
+    <h3>7.2b Cronómetro</h3>
+    <ul>
+      <li><b>De cada votación:</b> el tiempo se fija en «Tiempo de votación (minutos)». Al quedar 30 segundos, el reloj parpadea y suena un aviso; al terminar suena un tono final y la votación se cierra sola. «Abrir reloj en pantalla» lo proyecta en otra ventana.</li>
+      <li><b>De intervenciones:</b> el botón <b>⏱️ Cronómetro de intervención</b> (arriba en la Fase 3) abre una ventana aparte. Elija 1, 2, 3 o 5 minutos, o escriba minutos y segundos; escoja a cuántos segundos avisar (10 a 60), con cambio de color a ámbar y sonido; al terminar se pone rojo y suena. Atajos: Espacio inicia/pausa, R reinicia, F pantalla completa, C muestra u oculta los controles. Puede marcar «Cerrar la ventana al terminar».</li>
+    </ul>
+    <h3>7.3 Reglas de seguridad de las votaciones</h3>
+    <ul>
+      <li><b>Solo una votación abierta a la vez.</b> Si intenta abrir otra, el sistema se lo impide y le dice cuál sigue abierta. El servidor también lo rechaza.</li>
+      <li>Mientras haya una votación abierta, arriba de la Fase 3 aparece un <b>aviso verde</b> con el nombre, el tiempo restante y los botones <b>Ir a la votación</b> y <b>Cerrar ahora</b>. No importa en qué punto esté: siempre podrá cerrarla.</li>
+      <li>Al vencer el tiempo, la votación se cierra sola. Una votación cerrada no acepta más votos, aunque el propietario tenga la pantalla del celular abierta.</li>
+      <li>El celular <b>no necesita volver a escanear el QR</b>: con la pantalla abierta, cada votación nueva aparece sola.</li>
+    </ul>
+    <h3>7.4 Votaciones adicionales y puntos nuevos</h3>
+    <ul>
+      <li><b>Votaciones adicionales (punto 16):</b> cree tantas como necesite; cada una aparece con su estado (sin abrir, abierta, cerrada) y queda en el acta.</li>
+      <li><b>Proposiciones y varios:</b> registran la unidad, el solicitante y el detalle; pasan al acta.</li>
+      <li><b>➕ Agregar punto:</b> abre un formulario donde elige si el punto <b>tiene votación</b> (modalidad y opciones) y si <b>permite cargar archivos</b>. Todo punto admite notas y constancias para el acta. El punto <b>Cierre de la asamblea siempre queda de último</b>.</li>
+      <li>Para asambleas cortas, desmarque «Activo» o elimine los puntos que no se usan y agregue los propios.</li>
+    </ul>
+    <div class="warn"><strong>El cierre es definitivo</strong>Una votación cerrada no se reabre. Si hubo un error de enunciado, archive esa votación y cree una nueva, dejando constancia en el acta.</div>
+    <div class="bad"><strong>Mayoría calificada</strong>Decisiones del art. 46 de la Ley 675 (reforma de reglamento, cuotas extraordinarias altas, uso exclusivo de bienes comunes, etc.) requieren 70% de los coeficientes del conjunto, no de los presentes. Use la modalidad por coeficiente y no las tome en reunión no presencial.</div>
+  </div>
+</section>
+
+<section class="step" id="s7">
+  <h2><span class="num">8</span>Fase 4 · Cierre y acta</h2>
+  <div class="in">
+    <ol>
+      <li>Verifique que todas las votaciones estén cerradas.</li>
+      <li>Revise asistencia, quórum y resultados; el acta debe indicar tipo de reunión, convocatoria, orden del día, asistentes con unidad y coeficiente, y los votos emitidos (Ley 675, art. 47).</li>
+      <li>Haga una <b>copia de seguridad final</b> en el servidor.</li>
+      <li><b>Cierre la asamblea</b>. Se desactivan los QR de esa asamblea.</li>
+      <li>El presidente y el secretario firman el acta; el administrador debe publicarla en la sede dentro de los <b>20 días hábiles</b> siguientes.</li>
+      <li>Al cerrar, la asamblea queda guardada en <b>📚 Ver asambleas cerradas</b> (Fase 1 → Servidor y Asamblea, punto 7, o en la pantalla de cierre) para consultarla en modo lectura.</li>
+      <li>Para una nueva asamblea, cree una nueva: los QR se generan otra vez.</li>
+    </ol>
+  </div>
+</section>
+
+<section class="step" id="s8">
+  <h2><span class="num">9</span>Reglas legales clave</h2>
+  <div class="in">
+    <div class="tblwrap"><table>
+      <tr><th>Tema</th><th>Regla (Ley 675 de 2001)</th></tr>
+      <tr><td>Quórum</td><td>Más de la mitad de los coeficientes (art. 45).</td></tr>
+      <tr><td>Decisión ordinaria</td><td>Mitad más uno de los coeficientes (art. 45).</td></tr>
+      <tr><td>Decisiones calificadas</td><td>70% de los coeficientes (art. 46).</td></tr>
+      <tr><td>Segunda convocatoria</td><td>Tercer día hábil siguiente, 8:00 p. m., con un número plural de propietarios (art. 41).</td></tr>
+      <tr><td>Reunión no presencial</td><td>Solo si todos participan y se puede probar; con fe del revisor fiscal (arts. 42–44).</td></tr>
+      <tr><td>Acta</td><td>Firmada por presidente y secretario; publicada en 20 días hábiles (art. 47).</td></tr>
+      <tr><td>Sanciones</td><td>Con debido proceso y proporcionalidad (arts. 59–62).</td></tr>
+    </table></div>
+    <p>Consulte el <a href="diccionario.html">Diccionario jurídico</a> para más detalle, sentencias de tutela en propiedad horizontal y normas relacionadas. Confirme siempre con su reglamento y con su abogado.</p>
+  </div>
+</section>
+
+<section class="step" id="s9">
+  <h2><span class="num">10</span>Lista del día de la asamblea</h2>
+  <div class="in">
+    <p>Marque cada punto; el avance se guarda en este navegador.</p>
+    <h3>La noche anterior</h3>
+    <ul class="check" data-ck>
+      <li><input type="checkbox" id="c1"><label for="c1">Contraseñas iniciales cambiadas y copia de seguridad hecha.</label></li>
+      <li><input type="checkbox" id="c2"><label for="c2">Unidades, propietarios y coeficientes revisados (suma 100%).</label></li>
+      <li><input type="checkbox" id="c3"><label for="c3">Computador enchufado, con suspensión desactivada y buena conexión.</label></li>
+      <li><input type="checkbox" id="c4"><label for="c4">Asamblea creada y dirección pública de los QR guardada.</label></li>
+      <li><input type="checkbox" id="c5"><label for="c5">Prueba de votación desde un celular con datos móviles.</label></li>
+    </ul>
+    <h3>Una hora antes</h3>
+    <ul class="check" data-ck>
+      <li><input type="checkbox" id="c6"><label for="c6">PostgreSQL, backend y túnel en marcha; la dirección coincide con la de los QR.</label></li>
+      <li><input type="checkbox" id="c7"><label for="c7">Proyector con el monitor de votación probado.</label></li>
+      <li><input type="checkbox" id="c8"><label for="c8">Mesa de registro con operador, poderes y listado de respaldo impreso.</label></li>
+    </ul>
+    <h3>Durante</h3>
+    <ul class="check" data-ck>
+      <li><input type="checkbox" id="c9"><label for="c9">Asistencia registrada y quórum verificado antes de iniciar.</label></li>
+      <li><input type="checkbox" id="c10"><label for="c10">Cada votación: enunciado leído, abierta, cerrada, resultado anunciado.</label></li>
+      <li><input type="checkbox" id="c11"><label for="c11">Copia de seguridad antes de cada votación importante.</label></li>
+    </ul>
+    <h3>Al terminar</h3>
+    <ul class="check" data-ck>
+      <li><input type="checkbox" id="c12"><label for="c12">Copia final guardada y asamblea cerrada.</label></li>
+      <li><input type="checkbox" id="c13"><label for="c13">Acta preparada con asistencia y votos; publicada dentro de 20 días hábiles.</label></li>
+    </ul>
+    <div class="btnrow"><button class="btn sec" id="resetCk" type="button">Reiniciar lista</button><button class="btn" onclick="window.print()" type="button">🖨️ Imprimir manual</button></div>
+  </div>
+</section>
+
+<section class="step" id="s10">
+  <h2><span class="num">11</span>Solución de problemas</h2>
+  <div class="in">
+    <details class="faq"><summary>“Failed to fetch” o “No se pudo conectar al servidor”</summary><div>
+      <ul><li>Confirme que el backend está corriendo (<code class="i">npm run start:dev</code>) y que PostgreSQL está encendido.</li><li>Abra el sistema desde <code class="i">http://localhost:3000/</code>.</li><li>Recargue con Ctrl+F5.</li></ul></div></details>
+    <details class="faq"><summary>El QR abre en mi computador pero no en el celular</summary><div>
+      <p>Probablemente el QR usa localhost o una IP local. Guarde la dirección pública del túnel en la Fase 1 y genere de nuevo los QR. Si el celular usa el wifi del edificio y no abre, la red puede aislar los dispositivos entre sí; pruebe con datos móviles o con otro punto de acceso.</p></div></details>
+    <details class="faq"><summary>Cambió la dirección del túnel</summary><div>
+      <p>Cloudflare genera una dirección nueva cada vez que reinicia el túnel. Guarde la nueva en la Fase 1 y vuelva a mostrar los QR. Los QR impresos con la dirección anterior dejan de servir; por eso no debe reiniciar el túnel durante la asamblea.</p></div></details>
+    <details class="faq"><summary>Al abrir en otro navegador los datos aparecen vacíos</summary><div>
+      <p>Cada navegador y cada dirección guardan sus propios datos. Use “Restaurar copia” de la Fase 1 para traer la copia del servidor. Si el sistema advierte un conflicto, no sobrescriba sin revisar cuál copia es la más reciente.</p></div></details>
+    <details class="faq"><summary>Un propietario dice que no puede votar</summary><div>
+      <ul><li>Verifique que esté registrado como asistente y que su votación esté abierta.</li><li>Recuerde que solo hay un voto por unidad y votación.</li><li>Si el QR falla, use la votación a mano alzada y registre el resultado.</li><li>Confirme que la unidad no esté marcada en mora.</li></ul></div></details>
+    <details class="faq"><summary>El monitor no muestra resultados</summary><div>
+      <p>Confirme que la votación está abierta y que hay votos. Espere unos segundos: el sistema sincroniza automáticamente. Si persiste, recargue el monitor.</p></div></details>
+    <details class="faq"><summary>Se cerró el túnel o se apagó el computador durante la asamblea</summary><div>
+      <p>Los votos ya emitidos están en la base de datos. Reinicie PostgreSQL y el backend, abra <code class="i">http://localhost:3000/</code> e inicie de nuevo el túnel. Si la dirección cambió, continúe con mano alzada mientras se regeneran los QR.</p></div></details>
+  </div>
+</section>
+
+<section class="step" id="g0">
+  <h2><span class="num gnum">G</span>Guía de administración · Cómo usar esta guía</h2>
+  <div class="in">
+<p>Esta guía explica, paso a paso, cómo <b>operar AdminPH hoy</b>, cuando el sistema corre en el computador de la administración (modo «localhost») y se abre al público mediante un túnel de Cloudflare. Está escrita para que cualquier persona, sin conocimientos de programación, pueda encender el sistema, realizar una asamblea, hacer copias de seguridad, recuperar datos y dejar la plataforma limpia.</p>
+<div class="note"><strong>Cuando el sistema se suba a un hosting en internet</strong>Varios pasos cambiarán (ya no habrá que encender el computador ni el túnel, y las copias de seguridad serán distintas). Esa será una guía nueva. Los capítulos de <b>uso de la página</b> (asistencia, votaciones, QR, actas) seguirán siendo válidos.</div>
+<p><b>¿Qué quiero hacer?</b> Use esta tabla para ir directo al capítulo:</p>
+<div class="tblwrap"><table><tr><th>Quiero…</th><th>Capítulo</th></tr><tr><td>Encender el sistema el día de la asamblea</td><td>2</td></tr><tr><td>Obtener y guardar la dirección pública (túnel)</td><td>3</td></tr><tr><td>Cambiar contraseñas, crear un operador, asignarlo a una asamblea</td><td>4</td></tr><tr><td>Preparar y realizar una asamblea</td><td>5</td></tr><tr><td>Enviar los QR por correo o WhatsApp</td><td>6</td></tr><tr><td>Ver lo mismo en un segundo computador</td><td>7</td></tr><tr><td>Hacer una copia de seguridad y recuperarla</td><td>8</td></tr><tr><td>Borrar asambleas de prueba y dejar todo limpio</td><td>9</td></tr><tr><td>Actualizar el sistema con un parche o instalarlo en otro PC</td><td>10</td></tr><tr><td>Algo falla (mensajes de error)</td><td>11</td></tr><tr><td>Listas de chequeo para imprimir</td><td>12</td></tr></table></div>
+  </div>
+</section>
+
+<section class="step" id="g1">
+  <h2><span class="num gnum">G1</span>Guía 1 · Qué es el sistema y qué piezas tiene</h2>
+  <div class="in">
+<p>AdminPH funciona con <b>cuatro piezas</b> que deben estar encendidas al mismo tiempo en el computador principal:</p>
+<div class="tblwrap"><table><tr><th>Pieza</th><th>Para qué sirve</th><th>Cómo se sabe que está encendida</th></tr><tr><td><b>PostgreSQL</b> (base de datos)</td><td>Guarda unidades, asistencia, votos y actas.</td><td>Es un servicio de Windows que arranca solo con el computador.</td></tr><tr><td><b>Backend</b> (servidor)</td><td>Recibe los votos, valida los QR y entrega la página.</td><td>Ventana negra «AdminPH – SERVIDOR». Debe decir que escucha en el puerto 3000.</td></tr><tr><td><b>Página</b> (lo que se ve)</td><td>La pantalla de administración y la de votación en el celular.</td><td>Se abre en http://localhost:3000/</td></tr><tr><td><b>Túnel de Cloudflare</b></td><td>Permite que los celulares entren desde internet.</td><td>Ventana negra «AdminPH – TUNEL» con una dirección que termina en trycloudflare.com.</td></tr></table></div>
+<h3>Dónde están los archivos</h3>
+<ul><li>Backend (servidor): <code class="i">C:\Users\jccas\Desktop\ADMIN PH\backend\backend-adminph</code></li><li>Página (frontend): <code class="i">C:\Users\jccas\Desktop\ADMIN PH\frontend\AdminPH</code></li><li>Archivo de claves y ajustes del servidor: <code class="i">.env</code> (dentro de la carpeta del backend). <b>Es secreto</b>: no se envía por chat ni correo.</li><li>Arranque con un clic: <code class="i">INICIAR_ADMINPH.bat</code>.</li></ul>
+<h3>Programas que deben estar instalados</h3>
+<ul><li><b>PostgreSQL 18</b> con <b>pgAdmin</b> (base de datos y su administrador visual).</li><li><b>Node.js</b> (para ejecutar el servidor).</li><li><b>cloudflared</b> (el túnel de Cloudflare).</li></ul>
+<div class="warn"><strong>Regla de oro</strong>El computador principal debe permanecer <b>encendido, enchufado, conectado a internet y sin suspenderse</b> durante toda la asamblea. En Windows: Configuración → Sistema → Energía (o «Inicio/apagado y suspensión») → Suspender: <b>Nunca</b>.</div>
+  </div>
+</section>
+
+<section class="step" id="g2">
+  <h2><span class="num gnum">G2</span>Guía 2 · Encender el sistema (INICIAR_ADMINPH.bat)</h2>
+  <div class="in">
+<p>Se hace cada vez que se enciende el computador o se necesita el sistema. Si es el día de la asamblea, hágalo <b>una hora antes</b>.</p>
+<ol><li>Verifique que PostgreSQL esté encendido. Normalmente lo está solo. Si no, abra «Servicios» de Windows (tecla Windows, escriba <code class="i">services.msc</code>), busque el servicio de PostgreSQL (se llama parecido a <code class="i">postgresql-x64-18</code>) y pulse <b>Iniciar</b>.</li><li>Haga doble clic en <b>INICIAR_ADMINPH.bat</b>.</li><li>Se abrirán <b>dos ventanas negras</b>: «AdminPH – SERVIDOR (no cerrar)» y, a los 15 segundos, «AdminPH – TUNEL (no cerrar)». <b>No las cierre</b> mientras dure la asamblea. Puede minimizarlas.</li><li>También se abre el navegador en <code class="i">http://localhost:3000/</code>. Aparece la pantalla de ingreso.</li><li>En la ventana del TÚNEL busque una línea con una dirección como <code class="i">https://algo-raro-palabras.trycloudflare.com</code>. Esa es la <b>dirección pública</b> (Guía 3).</li><li>Ingrese con su usuario y contraseña.</li></ol>
+<div class="tip"><strong>Comprobación rápida</strong>En el navegador del computador escriba <code class="i">http://localhost:3000/api/docs</code>. Si carga una página de documentación, el servidor está sano.</div>
+<h3>Apagar el sistema</h3>
+<ol><li>Termine la asamblea, haga la copia de seguridad final (Guía 8) y cierre la asamblea en la página.</li><li>Cierre las dos ventanas negras (o pulse Ctrl+C en cada una).</li><li>Ya puede apagar el computador. No se pierde nada: los datos quedan en PostgreSQL.</li></ol>
+  </div>
+</section>
+
+<section class="step" id="g3">
+  <h2><span class="num gnum">G3</span>Guía 3 · El túnel de Cloudflare y la dirección pública</h2>
+  <div class="in">
+<p>Los celulares no pueden entrar a «localhost» (eso es solo su computador). Por eso se usa el túnel: genera una dirección pública <code class="i">https://…trycloudflare.com</code> que lleva a su computador.</p>
+<ol><li>Copie la dirección que aparece en la ventana del TÚNEL (termina en <code class="i">trycloudflare.com</code>).</li><li>En la página: <b>Fase 1 → 🔗 Servidor y Asamblea → punto 4 «Dirección pública para los QR»</b>. Péguela y pulse <b>Guardar</b>.</li><li>Pruebe desde un celular con <b>datos móviles</b> (sin wifi): debe abrir la pantalla de la página.</li><li>Solo después genere, envíe o imprima los QR.</li></ol>
+<div class="bad"><strong>La dirección cambia cada vez que se reinicia el túnel</strong>Si cierra la ventana del TÚNEL, reinicia el computador o se va el internet por mucho rato, la dirección <b>será otra</b> y los QR ya enviados o impresos <b>dejan de abrir</b>. Durante la asamblea no cierre esa ventana. Si ocurre, siga el Guía 11 («Cambió la dirección»).</div>
+<div class="note"><strong>Para que la dirección sea fija</strong>Se necesita un dominio propio y un túnel «con nombre» (o el hosting definitivo). Eso se hará después de la asamblea.</div>
+  </div>
+</section>
+
+<section class="step" id="g4">
+  <h2><span class="num gnum">G4</span>Guía 4 · Usuarios, contraseñas y operadores</h2>
+  <div class="in">
+<p>Quien entra a la página lo hace con usuarios guardados en la base de datos. De fábrica existen <b>superadmin</b>, <b>admin</b>, <b>operador</b> y <b>propietario101</b>, todos con una clave de fábrica que <b>debe cambiarse antes de usar el sistema de verdad</b>.</p>
+<div class="tblwrap"><table><tr><th>Rol</th><th>Qué puede hacer</th></tr><tr><td>Superadministrador</td><td>Todo: configuración, servidor, copias de seguridad y todas las asambleas.</td></tr><tr><td>Administrador</td><td>Prepara y cierra asambleas, vota, envía QR a todas las unidades o solo a asistentes.</td></tr><tr><td>Operador</td><td>Opera el día de la asamblea: asistencia, QR de presentes, votaciones. <b>Solo ve las asambleas a las que está asignado.</b> Envía QR únicamente a unidades presentes.</td></tr><tr><td>Usuario</td><td>Consulta información y resultados.</td></tr></table></div>
+<h3>Cómo ejecutar instrucciones SQL (se usará varias veces)</h3>
+<ol><li>Abra <b>pgAdmin</b> (le pedirá la clave de PostgreSQL).</li><li>En el panel izquierdo: Servers → PostgreSQL 18 → Databases → clic derecho sobre la base de AdminPH (se llama <code class="i">adminph</code>) → <b>Query Tool</b>.</li><li>Pegue el texto SQL en la ventana grande y pulse el botón ▶ (Ejecutar). Abajo aparece «Query returned successfully».</li><li>Si sale un error, no se alarme: copie el mensaje completo y consulte el Guía 11. Después de un error, abra una ventana nueva de Query Tool.</li></ol>
+<h3>Cambiar la contraseña de un usuario</h3>
+<p>Cambie <code class="i">superadmin</code> por el usuario que quiera y <code class="i">NuevaClave#2026</code> por la clave nueva (mínimo 10 caracteres, con letras, números y símbolos).</p>
+<pre>UPDATE users
+SET password_hash = crypt('NuevaClave#2026', gen_salt('bf'))
+WHERE username = 'superadmin';</pre>
+<p>Repita con <code class="i">admin</code>, <code class="i">operador</code> y <code class="i">propietario101</code> (este último puede desactivarse, ver más abajo). Anote las claves nuevas en un lugar seguro, <b>nunca</b> en el chat ni en la página.</p>
+<h3>Crear un operador nuevo</h3>
+<p>Cambie el usuario, la clave, el nombre y el correo, y ejecute las dos instrucciones juntas:</p>
+<pre>INSERT INTO users (organization_id, username, password_hash, full_name, email, active)
+SELECT organization_id, 'operador2', crypt('ClaveOperador#1', gen_salt('bf')),
+       'Maria Perez (operadora)', 'maria@ejemplo.com', true
+FROM users WHERE username = 'operador';
+
+INSERT INTO user_roles (user_id, role_id)
+SELECT u.id, r.id FROM users u, roles r
+WHERE u.username = 'operador2' AND r.code = 'operador';</pre>
+<h3>Asignar un operador a una asamblea (obligatorio)</h3>
+<p>Un operador solo puede trabajar en las asambleas a las que se le asigna. Si no, ve el mensaje «Operador no asignado a esta asamblea». <b>Hágalo después de crear cada asamblea nueva</b> (la última creada):</p>
+<pre>INSERT INTO assembly_users (assembly_id, user_id, assigned_role)
+SELECT a.id, u.id, 'operador'
+FROM assemblies a, users u
+WHERE u.username = 'operador2'
+  AND a.id = (SELECT id FROM assemblies ORDER BY created_at DESC LIMIT 1)
+ON CONFLICT DO NOTHING;</pre>
+<h3>Desactivar un usuario</h3>
+<pre>UPDATE users SET active = false WHERE username = 'propietario101';</pre>
+<div class="warn"><strong>Importante</strong>La limpieza de asambleas (Guía 9) borra también las asignaciones de operadores. Después de crear la asamblea nueva, vuelva a asignar al operador.</div>
+  </div>
+</section>
+
+<section class="step" id="g5">
+  <h2><span class="num gnum">G5</span>Guía 5 · Preparar y realizar una asamblea</h2>
+  <div class="in">
+<p>Resumen del recorrido completo. El detalle de cada pantalla está en el Manual de usuario (<code class="i">manual.html</code>) y las normas en el Diccionario PH.</p>
+<h3>Días antes</h3>
+<ol><li>Cambie las contraseñas de fábrica (Guía 4).</li><li>Revise unidades, propietarios, correos, teléfonos y coeficientes. <b>La suma de coeficientes debe ser 100 %.</b></li><li>Encienda el sistema (Guía 2) y entre como administrador.</li><li>Fase 1 → 🔗 Servidor y Asamblea: <b>(1)</b> conecte al servidor; <b>(2)</b> envíe las unidades al servidor y espere la confirmación; <b>(3)</b> cree la asamblea (nombre, fecha, tipo, orden del día); <b>(4)</b> guarde la dirección pública (Guía 3); <b>(5)</b> haga una copia de seguridad.</li><li>Si hay operador, asígnelo a la asamblea (Guía 4).</li><li>Prueba general: marque una unidad presente, escanee su QR con un celular con datos móviles y vote una votación de prueba. Después <b>limpie</b> (Guía 9) y vuelva a crear la asamblea real.</li></ol>
+<h3>Día de la asamblea</h3>
+<ol><li><b>Una hora antes:</b> encienda el sistema, verifique el túnel, proyector y mesa de registro.</li><li><b>Fase 1:</b> pulse <b>Iniciar la asamblea</b> cuando comience la sesión.</li><li><b>Fase 2 – Asistencia y QR:</b> registre la llegada de cada unidad (con apoderado si aplica). Entregue o envíe el QR (Guía 6). Verifique el <b>quórum</b> antes de comenzar.</li><li><b>Fase 3 – Votaciones:</b> siga el orden del día. Para cada votación: lea el enunciado, ábrala, espere los votos, ciérrela y anuncie el resultado. Solo puede haber <b>una votación abierta a la vez</b>. El botón ⏱️ abre el cronómetro de intervenciones.</li><li><b>Copia de seguridad</b> antes de cada votación importante (Guía 8).</li><li><b>Fase 4 – Cierre y acta:</b> verifique que todas las votaciones estén cerradas, haga la copia final, cierre la asamblea, genere el acta. Se firma por presidente y secretario y se publica dentro de los 20 días hábiles siguientes.</li></ol>
+<div class="note"><strong>Después</strong>La asamblea cerrada queda en <b>📚 Ver asambleas cerradas</b> (Fase 1 → Servidor y Asamblea) para consultarla cuando se necesite.</div>
+  </div>
+</section>
+
+<section class="step" id="g6">
+  <h2><span class="num gnum">G6</span>Guía 6 · Enviar los QR por correo y por WhatsApp</h2>
+  <div class="in">
+<p>Fase 2 → <b>📨 Enviar QR</b>. Cada propietario recibe <b>su propio QR</b>, usando el correo y el teléfono de la tabla de unidades.</p>
+<div class="tblwrap"><table><tr><th>Rol</th><th>A quiénes puede enviar</th></tr><tr><td>Operador</td><td>Solo a las unidades marcadas como <b>presentes</b>.</td></tr><tr><td>Administrador / Superadmin</td><td>A <b>solo los asistentes</b> o a <b>todas las unidades</b> (selector «¿A quiénes?»).</td></tr></table></div>
+<h3>Configurar el correo (una sola vez)</h3>
+<p>El correo sale desde una cuenta de Gmail que usted autoriza con una <b>contraseña de aplicación</b> (no es la clave normal de Gmail).</p>
+<ol><li>En su cuenta de Google active la <b>Verificación en dos pasos</b> (myaccount.google.com → Seguridad).</li><li>Entre a <code class="i">myaccount.google.com/apppasswords</code>, escriba un nombre (por ejemplo «AdminPH») y pulse <b>Crear</b>. Copie la contraseña de 16 letras.</li><li>Abra el archivo <code class="i">.env</code> del backend con el Bloc de notas y deje estas líneas (con sus datos):</li></ol>
+<pre>MAIL_HOST=smtp.gmail.com
+MAIL_PORT=587
+MAIL_USER=su_cuenta@gmail.com
+MAIL_PASSWORD="las16letrasjuntas"
+MAIL_FROM=su_cuenta@gmail.com
+MAIL_FROM_NAME=Administración Conjunto X</pre>
+<ol start="4"><li>Guarde el archivo y <b>reinicie el servidor</b> (cierre la ventana SERVIDOR y vuelva a abrir el .bat). Sin reiniciar, no toma los cambios.</li><li>Pruebe enviándose un QR a usted mismo.</li></ol>
+<div class="warn"><strong>Cuentas que no funcionan</strong>Las cuentas institucionales o educativas (por ejemplo <code class="i">@esap.edu.co</code>) y muchas cuentas de Office 365 bloquean este tipo de envío. Además, no es correcto usar una cuenta de otra entidad. Use Gmail con contraseña de aplicación o un correo del dominio propio. Gmail permite unos 500 envíos al día.</div>
+<h3>Enviar por correo</h3>
+<ol><li>Verifique que el servidor esté conectado, la asamblea elegida y la dirección pública guardada (si falta algo, la pantalla lo avisa).</li><li>Elija «Solo asistentes» o «Todas las unidades» (administrador).</li><li>Marque los destinatarios (botón «Marcar todos con correo») y pulse <b>✉️ Enviar correo a los marcados</b>. Se envía en tandas de 5.</li><li>Al terminar verá cuántos se enviaron y cuáles tuvieron problema, con el motivo. Cada unidad queda marcada con la hora del envío.</li></ol>
+<h3>Enviar por WhatsApp</h3>
+<ol><li>En el cuadro <b>«Indicativo WhatsApp»</b> deje solo <code class="i">57</code> (Colombia). <b>No escriba teléfonos ahí.</b></li><li>Pulse <b>💬</b> en la fila de una unidad, o <b>«WhatsApp: siguiente pendiente»</b> para ir en orden.</li><li>Se abre WhatsApp con el mensaje y el enlace listos. Si aparece «Continuar al chat», púlselo, y luego toque <b>Enviar</b>.</li></ol>
+<div class="note"><strong>Por qué no es automático</strong>WhatsApp no permite enviar mensajes automáticos sin su plataforma de pago (WhatsApp Business). Con este sistema usted toca «Enviar» en cada conversación.</div>
+<div class="warn"><strong>Datos personales</strong>Use correos y teléfonos solo para la asamblea y tenga la autorización de tratamiento de datos de los propietarios (Ley 1581 de 2012). El QR es personal e intransferible.</div>
+  </div>
+</section>
+
+<section class="step" id="g7">
+  <h2><span class="num gnum">G7</span>Guía 7 · Ver lo mismo en un segundo computador</h2>
+  <div class="in">
+<p>Puede abrir la página en otro computador usando la <b>dirección del túnel</b> (la que termina en trycloudflare.com) o, si está en la misma red, <code class="i">http://IP-del-computador:3000</code>. Pero recuerde: <b>cada navegador guarda su propio trabajo del día</b> (asistencia, orden del día, votaciones). Un computador nuevo aparece «en blanco».</p>
+<h3>Traer los datos al segundo computador</h3>
+<ol><li>Abra la dirección del túnel en el navegador del segundo computador e ingrese con su usuario.</li><li>Vaya a <b>Fase 1 → 🔗 Servidor y Asamblea</b>. Debe decir «Conectado como…». Elija la misma asamblea.</li><li>Pulse <b>⤵ Restaurar la copia del servidor</b>. Se cargan unidades, asistencia y orden del día.</li><li>Vaya a Fase 2 o Fase 3 y verá lo mismo que en el computador principal.</li></ol>
+<div class="warn"><strong>Es una foto, no una pantalla en vivo</strong>Lo que se marque después en el computador principal no aparece solo en el segundo: hay que volver a pulsar «Restaurar la copia del servidor». Los <b>votos de los celulares</b> sí van directo al servidor. <b>No trabaje en los dos computadores a la vez sobre lo mismo</b>; deje uno como principal y use el otro solo para mirar.</div>
+<div class="tip"><strong>Para proyectar resultados en vivo</strong>Abra <code class="i">panel-votacion.html</code> (en la misma dirección) en el segundo computador o en el proyector. Es de solo lectura y sí se actualiza en tiempo real.</div>
+<div class="note"><strong>Operador en otro computador</strong>Hoy un operador que trabaje en otro PC no se sincroniza en vivo con el principal. Lo recomendado es que el operador use el <b>mismo computador principal</b> o una pantalla compartida. Esa mejora se plantea para la versión en hosting.</div>
+  </div>
+</section>
+
+<section class="step" id="g8">
+  <h2><span class="num gnum">G8</span>Guía 8 · Copias de seguridad y recuperación</h2>
+  <div class="in">
+<p>Hay <b>dos tipos de copia</b> y conviene tener ambos:</p>
+<div class="tblwrap"><table><tr><th>Copia</th><th>Qué guarda</th><th>Cómo se hace</th></tr><tr><td><b>Dentro de la página</b> (copia del servidor)</td><td>El trabajo del día: asistencia, orden del día, votaciones.</td><td>Fase 1 → Servidor y Asamblea → «💾 Guardar copia ahora». Además se guarda sola mientras usted trabaja.</td></tr><tr><td><b>De la base de datos</b> (PostgreSQL)</td><td>TODO: unidades, usuarios, asambleas, votos, QR, actas.</td><td>pgAdmin o PowerShell (abajo).</td></tr></table></div>
+<h3>Cuándo hacerlas</h3>
+<ul><li>Copia de la base de datos: <b>antes de limpiar</b>, la noche anterior a la asamblea y al terminar.</li><li>Copia dentro de la página: antes de <b>cada votación importante</b> y al cierre.</li><li>Guarde una copia fuera del computador (memoria USB o nube privada).</li></ul>
+<h3>Hacer la copia de la base de datos – Opción A: con pgAdmin (más fácil)</h3>
+<ol><li>Abra <b>pgAdmin</b> y conéctese.</li><li>Clic derecho sobre la base <code class="i">adminph</code> → <b>Backup…</b></li><li>En «Filename» pulse la carpeta, elija el Escritorio y escriba un nombre con la fecha, por ejemplo <code class="i">respaldo_2026-10-01</code>.</li><li>Formato: <b>Custom</b>. Pulse <b>Backup</b>. Debe decir «Successfully completed».</li></ol>
+<h3>Opción B: con PowerShell</h3>
+<p>Windows no encuentra <code class="i">pg_dump</code> si se escribe solo el nombre; hay que usar la ruta completa. Con PostgreSQL 18:</p>
+<pre>&amp; "C:\Program Files\PostgreSQL\18\bin\pg_dump.exe" -U postgres -d adminph -f "$HOME\Desktop\respaldo_2026-10-01.sql"</pre>
+<p>Le pedirá la clave de PostgreSQL. El archivo queda en el Escritorio. (Si la versión instalada no es la 18, mire cuál carpeta existe con <code class="i">dir "C:\Program Files\PostgreSQL"</code> y cambie el número.)</p>
+<h3>Recuperar una copia (volver atrás)</h3>
+<div class="warn"><strong>Atención</strong>Recuperar <b>reemplaza</b> los datos actuales. Haga primero una copia de lo actual si todavía sirve de algo, y cierre el servidor (ventana SERVIDOR) mientras restaura.</div>
+<p><b>Si la copia fue hecha con pgAdmin (Custom):</b></p>
+<ol><li>En pgAdmin: clic derecho en <b>Databases → Create → Database…</b>, nómbrela <code class="i">adminph_recuperada</code> y guarde.</li><li>Clic derecho sobre <code class="i">adminph_recuperada</code> → <b>Restore…</b> → elija el archivo de la copia → <b>Restore</b>.</li><li>Cuando termine, cambie el nombre de la base en el archivo <code class="i">.env</code> (línea <code class="i">DATABASE_URL</code>, al final de la dirección) a <code class="i">adminph_recuperada</code> y reinicie el servidor. Así queda la anterior intacta por si acaso.</li></ol>
+<p><b>Si la copia fue hecha con PowerShell (archivo .sql):</b></p>
+<pre>&amp; "C:\Program Files\PostgreSQL\18\bin\psql.exe" -U postgres -c "CREATE DATABASE adminph_recuperada;"
+&amp; "C:\Program Files\PostgreSQL\18\bin\psql.exe" -U postgres -d adminph_recuperada -f "$HOME\Desktop\respaldo_2026-10-01.sql"</pre>
+<p>Después apunte el <code class="i">.env</code> a <code class="i">adminph_recuperada</code> como en el caso anterior y reinicie el servidor.</p>
+<h3>Recuperar la «copia del servidor» dentro de la página</h3>
+<p>Fase 1 → Servidor y Asamblea → <b>⤵ Restaurar la copia del servidor</b> (la más reciente) o <b>↩ Restaurar la copia anterior</b> (la que había antes). Úselo si cambió de navegador, de computador o se limpió el navegador.</p>
+<div class="note"><strong>Archivos del sistema</strong>Guarde también una copia de la carpeta <code class="i">ADMIN PH</code> completa (incluye el <code class="i">.env</code>) en una USB. Con la carpeta, la copia de la base de datos y los programas instalados, el sistema se puede reconstruir en otro computador.</div>
+  </div>
+</section>
+
+<section class="step" id="g9">
+  <h2><span class="num gnum">G9</span>Guía 9 · Borrar asambleas y dejar la plataforma limpia</h2>
+  <div class="in">
+<p>Sirve para eliminar asambleas de prueba y empezar de cero antes de la asamblea real.</p>
+<div class="bad"><strong>No se puede deshacer</strong>Haga primero la <b>copia de la base de datos</b> (Guía 8). No ejecute esto durante una asamblea real ni después de empezarla.</div>
+<h3>Paso 1 – Limpiar el servidor</h3>
+<p>Abra una <b>ventana nueva</b> de Query Tool (Guía 4), pegue <b>todo</b> este bloque junto y ejecútelo (▶):</p>
+<pre>ROLLBACK;
+BEGIN;
+TRUNCATE assemblies, attendance, qr_tokens CASCADE;
+DELETE FROM app_state_snapshots;
+DELETE FROM audit_logs;
+DELETE FROM units WHERE property_id &lt;&gt; '00000000-0000-0000-0000-000000000010';
+DELETE FROM properties WHERE id &lt;&gt; '00000000-0000-0000-0000-000000000010';
+COMMIT;</pre>
+<p>La primera línea puede mostrar un aviso inofensivo («no hay transacción en progreso»).</p>
+<div class="tblwrap"><table><tr><th>Se borra</th><th>Se conserva</th></tr><tr><td>Todas las asambleas, asistencia, QR, votos, actas, copias de seguridad del servidor, auditoría, y los conjuntos y unidades de prueba.</td><td>Los usuarios (superadmin, admin, operador…) y el conjunto demo del sistema.</td></tr></table></div>
+<div class="tip"><strong>Si solo quiere borrar las asambleas y conservar sus unidades</strong>Use únicamente estas líneas: <code class="i">BEGIN; TRUNCATE assemblies, attendance, qr_tokens CASCADE; DELETE FROM app_state_snapshots; DELETE FROM audit_logs; COMMIT;</code> (sin las dos líneas de <code class="i">DELETE FROM units</code> y <code class="i">DELETE FROM properties</code>).</div>
+<h3>Paso 2 – Reiniciar el servidor</h3>
+<p>Cierre la ventana SERVIDOR y abra otra vez el .bat (o ejecute <code class="i">npm run start:dev</code>).</p>
+<h3>Paso 3 – Limpiar el navegador (en cada computador usado)</h3>
+<ol><li>Abra la página y pulse <b>F12</b> → pestaña <b>Console</b>.</li><li>Escriba <code class="i">localStorage.clear()</code> y pulse Enter.</li><li>Recargue con <b>Ctrl+F5</b> e ingrese de nuevo.</li></ol>
+<h3>Paso 4 – Empezar la asamblea real</h3>
+<ol><li>Fase 1: conecte, cargue las unidades reales, envíelas al servidor y cree la asamblea.</li><li>Vuelva a asignar al operador a la asamblea (Guía 4).</li><li>Guarde la dirección pública (Guía 3).</li></ol>
+<h3>Si sale el error «violates RESTRICT… attendance_unit_id_fkey»</h3>
+<p>Significa que se intentó borrar unidades que todavía tienen asistencia. Ejecute el bloque completo del Paso 1 en una ventana nueva (borra primero la asistencia y luego las unidades).</p>
+  </div>
+</section>
+
+<section class="step" id="g10">
+  <h2><span class="num gnum">G10</span>Guía 10 · Actualizar el sistema y usarlo en otros computadores</h2>
+  <div class="in">
+<h3>Instalar una actualización (parche)</h3>
+<p>Las mejoras llegan como un archivo <code class="i">.zip</code> con una carpeta <code class="i">frontend</code> y/o <code class="i">backend</code>, más un archivo LEEME.</p>
+<ol><li>Haga una <b>copia de la carpeta ADMIN PH</b> y de la base de datos (Guía 8).</li><li>Descomprima el zip en el Escritorio.</li><li>Copie los archivos <b>respetando las carpetas</b>: lo de <code class="i">frontend\AdminPH\…</code> va dentro de <code class="i">ADMIN PH\frontend\AdminPH\…</code>; lo de <code class="i">backend\src\…</code> va dentro de <code class="i">ADMIN PH\backend\backend-adminph\src\…</code>. Responda «Reemplazar» cuando pregunte.</li><li>Si el LEEME dice que hay claves nuevas, agréguelas al <code class="i">.env</code>.</li><li><b>Cierre y vuelva a abrir</b> la ventana SERVIDOR (o el .bat).</li><li>En el navegador pulse <b>Ctrl+F5</b> (recarga sin memoria vieja).</li><li>Si el LEEME dice «ejecute npm install», abra PowerShell en la carpeta del backend y escriba <code class="i">npm install</code> (necesita internet).</li></ol>
+<p>Si algo sale mal, restaure la copia de la carpeta y vuelva a empezar.</p>
+<h3>Otros computadores que solo entran a la página</h3>
+<p><b>No hay que instalar nada.</b> La página la entrega el computador principal. Basta abrir la dirección del túnel (o <code class="i">http://IP:3000</code> en la misma red) y pulsar <b>Ctrl+F5</b> después de cada actualización.</p>
+<h3>Instalar el sistema completo en otro computador (que sea el servidor)</h3>
+<ol><li>Instale <b>PostgreSQL 18 + pgAdmin</b>, <b>Node.js</b> y <b>cloudflared</b>.</li><li>Copie la carpeta <code class="i">ADMIN PH</code> completa (con el <code class="i">.env</code>).</li><li>En PowerShell, dentro de <code class="i">ADMIN PH\backend\backend-adminph</code>, ejecute <code class="i">npm install</code>.</li><li>Cree la base de datos y restaure la última copia (Guía 8). Si la clave de PostgreSQL es distinta, ajuste <code class="i">DATABASE_URL</code> en el <code class="i">.env</code>.</li><li>Abra <code class="i">INICIAR_ADMINPH.bat</code> con el Bloc de notas y verifique que la ruta de la carpeta sea la de ese computador.</li><li>Haga doble clic en el .bat y siga el Guía 2.</li></ol>
+  </div>
+</section>
+
+<section class="step" id="g11">
+  <h2><span class="num gnum">G11</span>Guía 11 · Problemas frecuentes y mensajes de error</h2>
+  <div class="in">
+<div class="tblwrap"><table><tr><th>Qué ve</th><th>Causa probable</th><th>Qué hacer</th></tr><tr><td>«Failed to fetch» / no conecta al servidor</td><td>El servidor o PostgreSQL están apagados.</td><td>Encienda PostgreSQL (services.msc), abra el .bat, entre por <code class="i">http://localhost:3000/</code> y pulse Ctrl+F5.</td></tr><tr><td>Error <code class="i">EADDRINUSE</code> / «puerto 3000 en uso»</td><td>Hay otro servidor ya abierto.</td><td>Cierre la ventana negra anterior. Si persiste: PowerShell <code class="i">netstat -ano | findstr :3000</code>, tome el número final (PID) y <code class="i">taskkill /PID número /F</code>.</td></tr><tr><td>El QR abre en el computador pero no en el celular</td><td>El QR usa localhost o una IP.</td><td>Guarde la dirección pública (Guía 3) y vuelva a mostrar/enviar los QR. Pruebe con datos móviles.</td></tr><tr><td>Los QR dejaron de abrir</td><td>Cambió la dirección del túnel.</td><td>Copie la dirección nueva, guárdela en la Fase 1 y <b>reenvíe</b> los QR (los anteriores no sirven). Entre tanto, vote a mano alzada.</td></tr><tr><td>Otro navegador/PC aparece vacío</td><td>Cada navegador guarda lo suyo.</td><td>Fase 1 → «Restaurar la copia del servidor» (Guía 7).</td></tr><tr><td>«Operador no asignado a esta asamblea»</td><td>Falta asignar al operador.</td><td>Ejecute el SQL de asignación (Guía 4).</td></tr><tr><td>Botón de correo deshabilitado</td><td>Correo sin configurar, sin dirección pública o sin servidor.</td><td>Revise los avisos amarillos de la pantalla y el <code class="i">.env</code> (Guía 6). Reinicie el servidor.</td></tr><tr><td><code class="i">535 Authentication unsuccessful</code></td><td>Gmail/Office rechazó usuario o clave.</td><td>Use contraseña de aplicación de Gmail, sin espacios y entre comillas. No use cuentas institucionales.</td></tr><tr><td>WhatsApp dice «404 / página no existe»</td><td>Número mal armado (indicativo con muchos dígitos).</td><td>Deje el indicativo en <code class="i">57</code> y revise que el teléfono tenga 10 dígitos.</td></tr><tr><td>Otra votación sigue abierta</td><td>Solo se permite una a la vez.</td><td>Use el aviso verde «Cerrar ahora» y abra la siguiente.</td></tr><tr><td>Cambié algo del <code class="i">.env</code> y no pasa nada</td><td>El servidor no se reinició.</td><td>Cierre la ventana SERVIDOR y vuelva a abrir el .bat.</td></tr><tr><td>Se apagó el computador en plena asamblea</td><td>Corte de luz o suspensión.</td><td>Encienda, abra el .bat, restaure la copia si hace falta. Los votos ya emitidos están guardados. La dirección del túnel será nueva: reenvíe QR o vote a mano alzada.</td></tr></table></div>
+  </div>
+</section>
+
+<section class="step" id="g12">
+  <h2><span class="num gnum">G12</span>Guía 12 · Listas de chequeo</h2>
+  <div class="in">
+<h3>La noche anterior</h3>
+<ul class="gchk"><li><input type="checkbox" id="gk0"><label for="gk0">Contraseñas de fábrica cambiadas.</label></li><li><input type="checkbox" id="gk1"><label for="gk1">Copia de la base de datos hecha (y copiada a una USB).</label></li><li><input type="checkbox" id="gk2"><label for="gk2">Unidades, correos, teléfonos y coeficientes revisados (suma 100 %).</label></li><li><input type="checkbox" id="gk3"><label for="gk3">Computador enchufado, con suspensión en «Nunca» y buena conexión.</label></li><li><input type="checkbox" id="gk4"><label for="gk4">Prueba de votación con un celular con datos móviles, y luego limpieza.</label></li></ul>
+<h3>Una hora antes</h3>
+<ul class="gchk"><li><input type="checkbox" id="gk5"><label for="gk5">PostgreSQL encendido; .bat ejecutado; dos ventanas negras abiertas.</label></li><li><input type="checkbox" id="gk6"><label for="gk6">Dirección pública guardada en la Fase 1 y probada con datos móviles.</label></li><li><input type="checkbox" id="gk7"><label for="gk7">Asamblea creada y operador asignado.</label></li><li><input type="checkbox" id="gk8"><label for="gk8">Proyector con el panel de votación probado.</label></li><li><input type="checkbox" id="gk9"><label for="gk9">QR enviados por correo/WhatsApp o impresos con la dirección vigente.</label></li></ul>
+<h3>Durante</h3>
+<ul class="gchk"><li><input type="checkbox" id="gk10"><label for="gk10">Asistencia registrada y quórum verificado antes de iniciar.</label></li><li><input type="checkbox" id="gk11"><label for="gk11">Cada votación: enunciado leído, abierta, cerrada y resultado anunciado.</label></li><li><input type="checkbox" id="gk12"><label for="gk12">Copia de seguridad antes de cada votación importante.</label></li><li><input type="checkbox" id="gk13"><label for="gk13">No cerrar las ventanas negras ni apagar el computador.</label></li></ul>
+<h3>Al terminar</h3>
+<ul class="gchk"><li><input type="checkbox" id="gk14"><label for="gk14">Todas las votaciones cerradas; copia final hecha; asamblea cerrada.</label></li><li><input type="checkbox" id="gk15"><label for="gk15">Acta generada, firmada y publicada en 20 días hábiles.</label></li><li><input type="checkbox" id="gk16"><label for="gk16">Copia de la base de datos guardada fuera del computador.</label></li></ul>
+  </div>
+</section>
+
+<section class="step" id="g13">
+  <h2><span class="num gnum">G13</span>Guía 13 · Seguridad y qué cambiará al subir el sistema a internet</h2>
+  <div class="in">
+<ul><li><b>Contraseñas:</b> cámbielas, use claves largas y no las comparta por chat, correo ni capturas de pantalla.</li><li><b>El archivo .env</b> contiene claves: no lo envíe ni lo suba a ningún lado.</li><li><b>Dirección del túnel:</b> cualquiera que la tenga ve la pantalla de ingreso, pero solo entra quien tenga usuario y clave.</li><li><b>Datos personales:</b> correos, teléfonos y documentos de los propietarios están protegidos por la Ley 1581 de 2012. Úselos solo para la asamblea.</li><li><b>Equipo:</b> mantenga Windows actualizado y no deje el computador sin vigilancia con la sesión abierta.</li></ul>
+<h3>Qué cambiará con un hosting</h3>
+<div class="tblwrap"><table><tr><th>Hoy (localhost)</th><th>Con hosting en internet</th></tr><tr><td>Hay que encender el computador, el servidor y el túnel.</td><td>El sistema está siempre encendido, con dirección fija propia (por ejemplo app.profesionalesdevida.com).</td></tr><tr><td>La dirección del túnel cambia.</td><td>La dirección no cambia; los QR no se vencen.</td></tr><tr><td>Copias con pgAdmin / PowerShell en el PC.</td><td>Copias automáticas del proveedor.</td></tr><tr><td>El operador depende del computador principal.</td><td>Cada usuario entra desde su equipo con datos compartidos (mejora a desarrollar).</td></tr></table></div>
+<p>Para soporte técnico del sistema: <b>Juan Carlos Castro</b> · 310 778 7733 · info@profesionalesdevida.com</p>
+  </div>
+</section>
+
+<section class="step" id="g14">
+  <h2><span class="num gnum">G14</span>Guía 14 · Novedades de la versión 3.5</h2>
+  <div class="in">
+<h3>Botón «Coeficiente de participación»</h3>
+<p>Muestra, tomando a los <b>asistentes como el 100 %</b>, el coeficiente que le corresponde a cada unidad presente (coeficiente ÷ suma de presentes × 100). Está en tres sitios: <b>Fase 2 → 📐 Coef. de participación</b>, el botón dentro del <b>Panel de Quórum</b> y el botón <b>📐 Coef. de participación</b> en el <b>Modo Asamblea</b> (se abre sobre la pantalla, sin salir de la votación). Permite descargar a Excel/CSV e imprimir. No modifica los coeficientes originales.</p>
+<div class="warn"><strong>Úselo como información</strong>La Ley 675 de 2001 mide quórum y mayorías sobre los coeficientes del conjunto. Confirme con su asesor jurídico y con el reglamento de propiedad horizontal sobre qué base aplica a cada decisión.</div>
+<h3>Copias de seguridad con versiones (ya no hay «conflicto»)</h3>
+<ol><li>Fase 1 → Servidor y Asamblea → <b>5. Copia de seguridad</b>.</li><li><b>💾 Guardar copia ahora</b>: escriba un nombre (ej. «Antes de la votación 3»). Queda como una versión.</li><li><b>🕘 Ver versiones y restaurar</b>: elija el conjunto y la versión (fecha y hora) y pulse <b>Restaurar</b>. Funciona también en un navegador o computador nuevo y vacío. Antes de reemplazar, el sistema guarda lo que había como una versión más.</li><li><b>⬇️ Descargar copia (archivo)</b> y <b>⬆️ Cargar copia desde archivo</b>: respaldo en un archivo .json que usted guarda en una USB o su correo; sirve aunque falle el servidor.</li></ol>
+<div class="tip"><strong>Regla práctica</strong>Antes de cada votación importante pulse «Guardar copia ahora» con un nombre claro, y al terminar la asamblea descargue el archivo de copia.</div>
+<h3>Arranque estable del servidor (INICIAR_ADMINPH.bat nuevo)</h3>
+<p>El nuevo <code class="i">.bat</code> compila el sistema una vez y lo ejecuta en <b>modo producción</b> (el modo anterior «dev» se reinicia con cada cambio de archivo y es más lento), reinicia solo el servidor y el túnel si se caen, evita que Windows suspenda el equipo y usa el protocolo http2 del túnel (más estable en redes que bloquean UDP). Copie los tres archivos <code class="i">.bat</code> juntos a la misma carpeta y use siempre <code class="i">INICIAR_ADMINPH.bat</code>.</p>
+<div class="bad"><strong>Limitación que no se puede arreglar en localhost</strong>Si el túnel se reinicia, su dirección <b>cambia</b> y los QR ya enviados dejan de abrir. La solución definitiva es una dirección fija: publicar el sistema en internet (capítulo siguiente).</div>
+<div class="note"><strong>Limpieza de la plataforma</strong>Además de <code class="i">DELETE FROM app_state_snapshots;</code> ejecute <code class="i">DELETE FROM app_state_history;</code> para borrar también las versiones guardadas.</div>
+  </div>
+</section>
+
+<section class="step" id="g15">
+  <h2><span class="num gnum">G15</span>Guía 15 · Publicar AdminPH en internet (Supabase + servidor)</h2>
+  <div class="in">
+<p><b>Supabase</b> aporta la base de datos PostgreSQL en la nube. AdminPH además necesita un <b>servidor Node.js</b> (no puede correr dentro de Supabase): se recomienda <b>Render</b> (o Railway/Fly/un VPS). Resultado: una dirección fija como <code class="i">https://app.profesionalesdevida.com</code>, siempre encendida, sin túnel ni computador.</p>
+<div class="warn"><strong>Planes</strong>El plan gratuito de Supabase pausa proyectos inactivos y no incluye copias diarias; el gratuito de Render «duerme» el servicio. Para asambleas reales use planes de pago (consulte los precios vigentes en cada sitio). Esta guía no pudo probarse contra sus cuentas reales; el esquema de base de datos sí se probó desde cero.</div>
+<h3>Paso 1 — Base de datos en Supabase</h3>
+<ol><li>Cree cuenta en supabase.com → <b>New project</b>. Región cercana (por ejemplo São Paulo). Anote la <b>contraseña de la base de datos</b> (solo para usted; no la comparta por chat ni correo).</li><li>Menú <b>SQL Editor</b> → pegue y ejecute (Run) el contenido de <code class="i">database/01_ESQUEMA_PRODUCCION.sql</code>.</li><li>Abra <code class="i">database/02_USUARIO_INICIAL.sql</code> en el Bloc de notas, cambie los tres textos marcados «CAMBIAR» (empresa, su nombre y <b>su clave nueva</b>), péguelo en el SQL Editor y ejecútelo <b>una sola vez</b>.</li><li>Botón <b>Connect</b> → pestaña <b>Session pooler</b> → copie la cadena (empieza por <code class="i">postgresql://postgres.…</code>) y reemplace <code class="i">[YOUR-PASSWORD]</code> por la contraseña. Esa es su <code class="i">DATABASE_URL</code>.</li></ol>
+<h3>Paso 2 — Subir el código a GitHub (repositorio PRIVADO)</h3>
+<ol><li>Cree cuenta en github.com y un repositorio <b>privado</b> llamado <code class="i">adminph</code>.</li><li>Suba la carpeta <code class="i">ADMIN PH</code> con <code class="i">backend/backend-adminph</code> y <code class="i">frontend/AdminPH</code> (sin <code class="i">node_modules</code> ni <code class="i">.env</code>), más la carpeta <code class="i">despliegue</code>. Copie <code class="i">despliegue/dockerignore.txt</code> a la raíz con el nombre <code class="i">.dockerignore</code>.</li></ol>
+<h3>Paso 3 — Servidor en Render</h3>
+<ol><li>render.com → <b>New → Blueprint</b> → conecte su GitHub y elija el repositorio (usa <code class="i">despliegue/render.yaml</code>).</li><li>Cuando lo pida, escriba las variables: <code class="i">DATABASE_URL</code> (Paso 1), <code class="i">PUBLIC_APP_URL</code> y <code class="i">CORS_ORIGINS</code> (la dirección final, ver Paso 4). <code class="i">JWT_SECRET</code> y <code class="i">QR_SIGNING_SECRET</code> se generan solas.</li><li>Espere el despliegue y abra <code class="i">https://SU-SERVICIO.onrender.com/api/docs</code>: si carga, el servidor está sano. Entre a la raíz e inicie sesión como <code class="i">superadmin</code> con la clave que escribió en el paso 1.</li></ol>
+<h3>Paso 4 — Dirección propia (sin mover su dominio a Cloudflare)</h3>
+<ol><li>En Render → su servicio → <b>Settings → Custom Domains</b> → agregue <code class="i">app.profesionalesdevida.com</code>.</li><li>En el panel donde administra el DNS de profesionalesdevida.com cree un registro <b>CNAME</b> <code class="i">app</code> → el valor que Render indique. Render emite el certificado HTTPS automáticamente.</li><li>Cuando cargue, ponga esa dirección en <code class="i">PUBLIC_APP_URL</code> y <code class="i">CORS_ORIGINS</code> de Render y guarde (se reinicia solo).</li></ol>
+<h3>Paso 5 — Primer uso</h3>
+<ol><li>Entre con <code class="i">superadmin</code>, cree sus usuarios (administrador, operadores) y <b>no deje claves de prueba</b>.</li><li>Cargue las unidades con el Excel (Fase 1), cree la asamblea, asigne operadores, inicie la asamblea y envíe los QR. Como la dirección ya es fija, los QR no se vencen.</li><li>Mantenga una copia: Supabase (planes de pago) hace copias automáticas, y además use el botón <b>Descargar copia (archivo)</b> después de cada asamblea.</li></ol>
+<div class="note"><strong>Actualizaciones</strong>Cuando haya una versión nueva (parche), se suben los archivos a GitHub y Render vuelve a desplegar solo. Ya no hay que tocar el computador de la administración.</div>
+  </div>
+</section>
+
+<section class="step" id="g16">
+  <h2><span class="num gnum">G16</span>Guía 16 · Novedades de la versión 3.6: votación manual y carga de unidades</h2>
+  <div class="in">
+<h3>Votación manual de respaldo (si falla el QR)</h3>
+<ol><li>Con los asistentes ya marcados, entre a <b>Fase 3 → Modo Asamblea</b> y pulse <b>📥 Votación manual (Excel)</b>.</li><li>Marque las votaciones que necesita (orden del día, elecciones, votaciones adicionales) y pulse <b>Descargar Excel</b>. Obtiene <b>una hoja por votación</b>.</li><li>Cada hoja lista, en <b>orden alfabético</b>, una fila por unidad presente (un <b>apoderado con varias unidades ocupa una sola fila</b> con la suma de sus coeficientes y el nombre de los copropietarios que representa). Tiene una casilla amarilla <b>MARCAR X</b> por cada opción.</li><li>Al escribir <b>X</b>, aparece el coeficiente de esa fila en la columna verde. Abajo el Excel calcula el total por opción, el <b>% sobre los asistentes (=100)</b>, el % sobre el total del conjunto, el <b>mínimo para aprobar</b> y si <b>alcanza</b> (SÍ/NO), el total votado y lo que quedó sin votar.</li><li>Puede imprimirla y votar en papel, o llenarla en un computador. Después, en la misma ventana, <b>cargue el Excel diligenciado</b>: AdminPH muestra el resultado y, con <b>Registrar</b>, lo deja en la votación (por coeficiente) para el acta.</li></ol>
+<div class="warn"><strong>Detalles</strong>La votación debe estar <b>cerrada</b> para registrar el resultado manual. Si llegan más asistentes, vuelva a descargar el Excel. Una fila con más de una X (en votaciones de una sola opción) no se cuenta y se avisa. El Excel funciona sin internet.</div>
+<h3>Carga rápida de unidades desde Excel</h3>
+<ol><li><b>Fase 1 → Configuración</b> (arriba): tarjeta <b>⚡ Carga rápida de unidades desde Excel</b>. También aparece en el módulo de Carga Excel.</li><li><b>Descargar plantilla</b> y llénela: <code class="i">UNIDAD · DOCUMENTO · PROPIETARIO · CORREO · TELEFONO · COEFICIENTE · COEF_PARQUEADERO</code> y, opcional, <code class="i">ETAPA</code>. Ya no hace falta crear etapas, conjuntos ni niveles a mano: la unidad se llama como usted la escriba («Casa 1», «Lote 5»).</li><li><b>Varios copropietarios en una unidad:</b> repita el nombre de la unidad en filas seguidas, una fila por persona, cada una con su correo y teléfono. El coeficiente se escribe en la primera fila.</li><li>Suba el archivo: verá una <b>vista previa</b> con el total de unidades, la suma de coeficientes (debe dar 100), unidades sin correo o teléfono y correos dudosos. Pulse <b>Crear unidades</b>. Si ya hay unidades puede elegir «Agregar y actualizar» o «Reemplazar todo».</li><li>Luego, <b>Fase 1 → Servidor y Asamblea → Enviar unidades al servidor</b>.</li></ol>
+<div class="tip"><strong>Envío de QR a copropietarios</strong>En <b>📨 Enviar QR</b> aparece una fila por persona (propietario y copropietarios). Todos reciben el <b>mismo QR de la unidad</b>, cada uno en su correo o WhatsApp.</div>
+  </div>
+</section>
+
+<section class="step" id="g17">
+  <h2><span class="num gnum">G17</span>Guía 17 · Novedades de la versión 3.7: apoderados con un solo QR</h2>
+  <div class="in">
+<p>Un apoderado que representa varias unidades (por ejemplo Casa 1, Casa 10, Lote 1 y Apartamento 6) recibe <b>un solo QR</b>. Al votar, su voto se registra <b>por cada unidad</b> con el coeficiente de cada una, es decir, vale la <b>suma de los coeficientes</b>. Las demás unidades ya no tienen QR propio (si alguien intenta votar con ese QR, el sistema lo rechaza).</p>
+<h3>Registrar un apoderado</h3>
+<ol><li><b>Fase 2 → 🤝 Apoderados</b>. Escriba nombre, documento y, si quiere enviarle el QR, correo y teléfono.</li><li>Marque en la lista <b>todas las unidades que representa</b> (hay buscador; ve el copropietario y el coeficiente de cada una y el total que va sumando).</li><li>Deje marcada la casilla «presentes» para registrar de una vez la asistencia por poder de todas sus unidades, y pulse <b>Registrar poder</b>.</li><li>La <b>panorámica</b> muestra, por apoderado, todas sus unidades, <b>el nombre del copropietario que representa cada una</b>, el coeficiente de cada una, el total, la asistencia y en qué unidad está su QR. Desde allí puede marcar o quitar la asistencia de todo el grupo, editar o quitar el poder.</li><li>Envíe su QR desde <b>📨 Enviar QR</b>: aparece <b>una sola fila</b> («Lote 1 + 2 unidades — Ana (apoderado)») con el correo y teléfono del apoderado.</li></ol>
+<h3>Poderes precargados desde el Excel</h3>
+<p>La plantilla de carga de unidades tiene 4 columnas opcionales: <code class="i">APODERADO_DOCUMENTO</code>, <code class="i">APODERADO_NOMBRE</code>, <code class="i">APODERADO_CORREO</code>, <code class="i">APODERADO_TELEFONO</code>. Escriba los mismos datos del apoderado en cada una de sus unidades. Después de cargar el Excel, en <b>Fase 2 → Apoderados</b> pulse <b>Crear apoderados desde el Excel</b>: se arman los grupos sin marcar asistencia; el día de la asamblea basta pulsar <b>Marcar todas presentes</b>.</p>
+<div class="warn"><strong>Importante</strong>Esta versión cambia el servidor: después de copiar los archivos, ejecute de nuevo <code class="i">INICIAR_ADMINPH.bat</code> (compila e inicia). La tabla nueva se crea sola. El reglamento de cada conjunto puede limitar cuántos poderes puede llevar una persona: verifíquelo antes de registrar.</div>
+<div class="tip"><strong>Votación manual</strong>El Excel de votación manual ya agrupa al apoderado en una sola fila con la suma de sus coeficientes y los copropietarios que representa.</div>
+  </div>
+</section>
+
+<section class="step" id="g18">
+  <h2><span class="num gnum">G18</span>Guía 18 · Novedades de la versión 3.8: apoderado único, Excel por punto y evidencia de asistencia</h2>
+  <div class="in">
+<h3>Apoderado una sola vez</h3>
+<p>En el selector «Seleccionar candidato desde asistentes» el apoderado aparece <b>una sola vez</b>, con su nombre, las unidades que representa y la <b>suma de sus coeficientes</b>. El contador de votos QR indica «N votantes — M unidades» cuando un apoderado vota por varias.</p>
+<h3>Votación manual de todos los puntos</h3>
+<p>La lista de <b>Votación manual (Excel)</b> sigue el orden del día: presidente, secretario, comisión verificadora, consejo, comité de convivencia, revisor fiscal, aprobaciones, votaciones adicionales y los puntos creados con «Agregar punto». Los puntos que aún no tienen candidatos aparecen como <b>pendientes</b>: agregue los candidatos en la Fase 3 y el Excel quedará disponible. En <b>Fase 3 → Orden del día</b> cada punto con votación tiene su propio botón <b>📥 Excel</b>.</p>
+<h3>Evidencia general de asistencia</h3>
+<p><b>Fase 2 → 🤝 Apoderados → 📋 Evidencia general de asistencia</b>: unidades presentes en orden (por etapa/módulo y unidad) y, debajo, los apoderados con sus unidades. Se puede ver, imprimir o descargar en Excel como soporte del acta.</p>
+<div class="tip"><strong>Nombre «Demo» del superadministrador</strong>Sale del servidor (PostgreSQL), no de la versión. Se cambia con el archivo <code class="i">CAMBIAR_NOMBRE_SUPERADMIN.sql</code> incluido en el paquete.</div>
+  </div>
+</section>
+
+<section class="step" id="g19">
+  <h2><span class="num gnum">G19</span>Guía 19 · Novedades de la versión 3.9: Excel de votación mejorado y panel en vivo</h2>
+  <div class="in">
+<h3>Excel de votación manual</h3>
+<ul><li>El archivo de <b>un solo punto</b> lleva el nombre de ese punto (por ejemplo <code class="i">VOTACION_Designacion_comision_verificadora_del_acta_…xlsx</code>); el que baja varios puntos juntos se llama <code class="i">VOTACION_MANUAL_GENERAL_…</code>.</li>
+<li>La <b>fila 1</b> son los títulos con filtro y queda inmovilizada junto con las tres primeras columnas. Las convenciones, el resumen, las firmas y el código de votación están <b>debajo</b> de la lista.</li>
+<li>Las columnas <b>MARCAR X</b> están seguidas y luego vienen las columnas de coeficiente. La hoja está <b>protegida sin contraseña</b>: solo se pueden escribir las casillas amarillas, y solo la letra X.</li></ul>
+<h3>Cargar el Excel diligenciado</h3>
+<p>Se puede cargar desde <b>📤 Cargar</b> en el punto del orden del día o desde <b>Votación manual (Excel)</b>; el efecto es el mismo. Si la votación estaba abierta, el sistema la cierra (pide confirmación) y deja registrados los votos, la estadística y el gráfico, igual que al cerrar una votación normal. El botón <b>📊 Ver resultado en el punto</b> lleva directo a la pantalla del punto. La ventana tiene <b>✖ Cerrar</b> arriba y abajo.</p>
+<h3>Panel de votación en vivo</h3>
+<p>«← Volver a AdminPH» y «Salir» llevan siempre a la <b>Fase 3</b>. Las unidades representadas por un apoderado ya no muestran QR: indican «Vota con el QR de su apoderado».</p>
+  </div>
+</section>
+
+<section class="step" id="g20">
+  <h2><span class="num gnum">G20</span>Guía 20 · Novedades de la versión 4.0: menú lateral, Ayuda y recursos, versiones</h2>
+  <div class="in">
+<h3>Menú lateral</h3>
+<p>Las fases están ahora en un menú desplegable a la izquierda; al elegir una fase se despliegan sus módulos. Al entrar se llega a <b>Inicio</b>, con tarjetas de herramientas y acciones rápidas. «Servidor y asamblea» es el primer botón de la Fase 1.</p>
+<h3>Ayuda y recursos</h3>
+<p>Admin Usuarios, Manual de Usuario y Diccionario PH salieron de la Fase 1 y están agrupados en <b>Ayuda y recursos</b>, visible para todos los usuarios. El diccionario incluye Decreto 768 de 2025 (proceso único de policía, no regula la tutela), acción de tutela y términos de las cartillas de MinVivienda y CONPUCOL.</p>
+<h3>Área administrativa</h3>
+<p>Reuniones virtuales, Gestor documental, Reportes y estadísticas y Agenda aparecen marcados <b>«En desarrollo»</b>; todavía no funcionan.</p>
+<h3>Versiones guardadas</h3>
+<p>En «Ver versiones y restaurar» cada versión tiene ahora <b>Eliminar</b> (solo superadmin y admin). La versión vigente no se puede eliminar.</p>
+<h3>Panel de votación en vivo</h3>
+<p>Se actualiza solo cada 4 segundos y tiene <b>Actualizar todo</b>. <b>Archivar</b> solo oculta la sesión en el panel; no borra la votación de la Fase 3. Si una unidad figura ausente en la Fase 2, el sistema corrige el servidor y deja de aparecer como presente.</p>
+<h3>Clic derecho</h3>
+<p>Los botones del menú permiten «Abrir en pestaña nueva» o «en ventana nueva» con clic derecho. En el orden del día, las acciones quedan alineadas en columnas.</p>
+  </div>
+</section>
+
+<section class="step" id="g21">
+  <h2><span class="num gnum">G21</span>Guía 21 · Novedades de la versión 4.1: app en el teléfono y simulador de cuotas</h2>
+  <div class="in">
+<h3>AdminPH como aplicación (PWA)</h3>
+<p>Con la página publicada en <b>HTTPS</b>, abra AdminPH en el navegador del teléfono y elija «Instalar aplicación» (Chrome: menú ⋮; iPhone: Safari → Compartir → «Añadir a pantalla de inicio»). Se abre a pantalla completa con su ícono. Los datos de votación y asistencia siempre se leen del servidor: la app instalada nunca muestra datos viejos.</p>
+<h3>Simulador de cuotas de administración (anexo pedagógico)</h3>
+<p>En <b>Ayuda y recursos → Simulador de cuotas</b>. Escriba el valor a repartir, la cantidad de unidades (o cargue un Excel) y elija: <b>por coeficiente</b> (cuota = coeficiente × valor mensual), <b>nominal</b> (valor ÷ unidades) o <b>comparar ambas</b>. Puede calcular el coeficiente por área, redondear al millar, comparar con la cuota anterior, descargar el resultado en Excel (con fórmulas) e imprimirlo. Incluye la explicación paso a paso y las referencias de la Ley 675. Es un ejercicio de aprendizaje: la cuota real la aprueba la asamblea.</p>
+  </div>
+</section>
+
+<section class="step" id="g22">
+  <h2><span class="num gnum">G22</span>Guía 22 · Novedades de la versión 4.2: agenda, reuniones virtuales, anexos del acta y visor de archivos</h2>
+  <div class="in">
+<h3>Agenda</h3>
+<p>Área administrativa → <b>Agenda</b>. Muestra el mes activo con flechas arriba y abajo para pasar al mes anterior o siguiente (y «Hoy»). Toque una casilla vacía para programar una asamblea, reunión de consejo o contractual, envío de evidencias u otro evento; puede repetirse cada semana o cada mes. La fecha de la asamblea de la Fase 1 aparece sola. Los próximos eventos se ven también en Inicio.</p>
+<h3>Reuniones virtuales</h3>
+<p>Botones <b>Reunirse ahora</b> (crea una sala y un enlace para compartir por WhatsApp o correo), <b>Programar reunión</b> y <b>Unirse con ID</b>. Muestra la próxima reunión (o la que está en curso), la agenda de hoy y el calendario completo. La videollamada la presta un servicio externo (por defecto Jitsi Meet, sin cuenta); también puede pegar el enlace de Meet, Zoom o Teams. AdminPH no transmite video. «Chats y canales» está en desarrollo; en «Grabaciones y archivos» se guarda el enlace de cada grabación.</p>
+<h3>Anexos del acta (Fase 4)</h3>
+<p>En la pantalla del acta hay un botón por anexo para <b>incluirlo o no</b> en el PDF: listado de asistentes, totales y quórum, constancia de QR, votación manual en Excel (archivos descargados y cargados), panel de votación en vivo, simulador de cuotas y documentos adjuntos. Por seguridad la constancia de QR no imprime los códigos, porque son credenciales de voto.</p>
+<h3>Archivos de la Fase 3</h3>
+<p>Al pulsar el nombre o «Abrir», el archivo se muestra dentro de AdminPH: PDF, imágenes, texto, Excel (.xlsx), Word (.docx) y PowerPoint (.pptx, solo texto). Los formatos antiguos (.doc, .xls, .ppt) no se pueden mostrar: se ofrece «Descargar original».</p>
+<h3>Otros ajustes</h3>
+<ul><li>Menú lateral: un segundo clic sobre la fase activa pliega o despliega sus módulos.</li>
+<li>Coeficiente de participación: la tabla se ve completa, sin barra de desplazamiento.</li>
+<li>Panel de votación en vivo: el estado presente/ausente sale de la lista de asistencia de la Fase 2 y corrige el servidor.</li>
+<li>Simulador de cuotas: calculadora de tres cajas (arriba y abajo) y botón «Reiniciar todo a cero».</li></ul>
+  </div>
+</section>
+
+</main>
+</div>
+
+<footer>© 2026 AdminPH · Versión 2.1 · Manual de usuario y guía de administración</footer>
+
+<script>
+var KEY='adminph_manual_ck';
+function leer(){ try{ return JSON.parse(localStorage.getItem(KEY)||'{}'); }catch(e){ return {}; } }
+function guardar(o){ try{ localStorage.setItem(KEY,JSON.stringify(o)); }catch(e){} }
+var boxes=[].slice.call(document.querySelectorAll('.check input'));
+function actualizar(){
+  var n=boxes.filter(function(b){return b.checked;}).length, p=boxes.length?Math.round(100*n/boxes.length):0;
+  document.getElementById('bar').style.width=p+'%';
+  document.getElementById('plabel').textContent='Lista del día: '+p+'%';
+}
+var st=leer();
+boxes.forEach(function(b){
+  b.checked=!!st[b.id];
+  b.addEventListener('change',function(){ var o=leer(); o[b.id]=b.checked; guardar(o); actualizar(); });
+});
+document.getElementById('resetCk').addEventListener('click',function(){ boxes.forEach(function(b){b.checked=false;}); guardar({}); actualizar(); });
+actualizar();
+
+var links=[].slice.call(document.querySelectorAll('#tocList a'));
+if('IntersectionObserver' in window){
+  var io=new IntersectionObserver(function(es){
+    es.forEach(function(e){ if(e.isIntersecting){ links.forEach(function(a){ a.classList.toggle('on', a.getAttribute('href')==='#'+e.target.id); }); } });
+  },{rootMargin:'-20% 0px -70% 0px'});
+  [].forEach.call(document.querySelectorAll('section.step'),function(s){ io.observe(s); });
+}
+</script>
+</body>
+</html>

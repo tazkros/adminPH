@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Diccionario jurídico PH · AdminPH</title>
+<style>
+:root{
+  --bg:#f3f6fa; --card:#fff; --ink:#1b2433; --muted:#5b6778; --line:#e1e7ef;
+  --brand:#12324f; --brand2:#1f5f8b; --accent:#0e9f8e; --warn:#b45309; --warnbg:#fff7ed;
+  --ok:#166534; --okbg:#ecfdf5; --info:#1e40af; --infobg:#eff6ff; --hl:#fde68a;
+  --radius:14px; --shadow:0 2px 10px rgba(18,50,79,.08);
+}
+@media (prefers-color-scheme: dark){
+  :root{--bg:#0d1520;--card:#152234;--ink:#e6edf6;--muted:#9fb0c5;--line:#263a52;--brand:#0a1c2e;--brand2:#5aa9e0;
+  --warnbg:#3a2a12;--okbg:#0f2f22;--infobg:#132a4d;--hl:#7a5c00;--warn:#fbbf24;--ok:#6ee7b7;--info:#93c5fd;--shadow:none}
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.65 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+a{color:var(--brand2)}
+header.top{background:linear-gradient(135deg,#0a1c2e,#1f5f8b);color:#fff;padding:28px 20px 22px;text-align:center}
+header.top h1{margin:0 0 4px;font-size:clamp(1.4rem,4vw,2.1rem)}
+header.top p{margin:0;opacity:.85}
+.bar{position:sticky;top:0;z-index:20;background:var(--brand);border-bottom:1px solid rgba(255,255,255,.12)}
+.bar-in{max-width:1200px;margin:auto;padding:10px 16px;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;flex:1}
+.tabs button,.btn{font:inherit;font-size:.9rem;font-weight:600;border:0;border-radius:9px;padding:8px 13px;cursor:pointer;
+  background:rgba(255,255,255,.1);color:#fff}
+.tabs button:hover{background:rgba(255,255,255,.2)}
+.tabs button[aria-selected="true"]{background:#fff;color:#12324f}
+.btn-back{background:var(--accent);text-decoration:none;display:inline-block}
+.btn-back:hover{filter:brightness(1.1)}
+.wrap{max-width:1200px;margin:auto;padding:20px 16px 40px;display:grid;grid-template-columns:270px 1fr;gap:22px}
+aside{position:sticky;top:64px;align-self:start;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:14px;box-shadow:var(--shadow)}
+aside label{font-weight:700;font-size:.85rem;color:var(--muted)}
+#q{width:100%;margin:6px 0 8px;padding:10px 12px;border:1px solid var(--line);border-radius:9px;font:inherit;background:var(--bg);color:var(--ink)}
+#q:focus{outline:2px solid var(--brand2)}
+#count{font-size:.82rem;color:var(--muted);min-height:1.2em}
+#toc{margin:10px 0 0;padding:0;list-style:none;font-size:.9rem;max-height:52vh;overflow:auto}
+#toc a{display:block;padding:4px 8px;border-radius:6px;text-decoration:none;color:var(--ink)}
+#toc a:hover{background:var(--bg)}
+.alert{border-left:5px solid var(--warn);background:var(--warnbg);padding:12px 16px;border-radius:10px;margin:0 0 16px;font-size:.93rem}
+.alert.info{border-color:var(--info);background:var(--infobg)}
+section.sec{display:none}
+section.sec.on,body.searching section.sec{display:block}
+h2.st{margin:0 0 4px;font-size:1.45rem;color:var(--brand2)}
+p.lead{margin:0 0 16px;color:var(--muted)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px;margin-bottom:14px;box-shadow:var(--shadow)}
+.card h3{margin:0 0 8px;font-size:1.1rem}
+details.item{background:var(--card);border:1px solid var(--line);border-radius:12px;margin-bottom:10px;box-shadow:var(--shadow)}
+details.item>summary{cursor:pointer;padding:13px 16px;font-weight:650;list-style:none;display:flex;gap:10px;align-items:center}
+details.item>summary::-webkit-details-marker{display:none}
+details.item>summary::before{content:"▸";color:var(--brand2);transition:transform .15s}
+details.item[open]>summary::before{transform:rotate(90deg)}
+details.item>summary .ref{margin-left:auto;font-size:.75rem;font-weight:600;background:var(--infobg);color:var(--info);padding:2px 9px;border-radius:99px;white-space:nowrap}
+details.item .body{padding:0 18px 16px 36px}
+details.item .body p{margin:.5rem 0}
+.tag{display:inline-block;font-size:.72rem;font-weight:700;padding:2px 9px;border-radius:99px;margin-right:6px;background:var(--okbg);color:var(--ok)}
+.tag.w{background:var(--warnbg);color:var(--warn)}
+table{width:100%;border-collapse:collapse;font-size:.93rem;background:var(--card)}
+th{background:var(--brand2);color:#fff;text-align:left;padding:10px 12px}
+td{padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+.tblwrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px;margin-bottom:14px}
+ul.clean{padding-left:1.2rem;margin:.4rem 0}
+mark{background:var(--hl);color:inherit;border-radius:3px;padding:0 2px}
+.hidden{display:none!important}
+footer{background:var(--brand);color:#c9d6e6;text-align:center;padding:20px 16px;font-size:.85rem}
+footer p{margin:4px 0}
+@media (max-width:860px){
+  .wrap{grid-template-columns:1fr}
+  aside{position:static}
+  #toc{max-height:none}
+  details.item .body{padding-left:18px}
+  details.item>summary .ref{display:none}
+}
+@media print{.bar,aside{display:none}.wrap{display:block}section.sec{display:block!important}details.item{break-inside:avoid}}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <h1>⚖️ Diccionario jurídico de Propiedad Horizontal</h1>
+  <p>Ley 675 de 2001 · reformas · jurisprudencia y tutela en PH · aplicado a la asamblea</p>
+</header>
+
+<div class="bar"><div class="bar-in">
+  <div class="tabs" role="tablist" id="tabs">
+    <button role="tab" data-sec="estructura" aria-selected="true">📖 Estructura de la ley</button>
+    <button role="tab" data-sec="diccionario" aria-selected="false">📚 Diccionario A–Z</button>
+    <button role="tab" data-sec="quorum" aria-selected="false">🗳️ Quórum y mayorías</button>
+    <button role="tab" data-sec="reformas" aria-selected="false">🆕 Reformas y normas</button>
+    <button role="tab" data-sec="tutela" aria-selected="false">🛡️ Tutela en PH</button>
+    <button role="tab" data-sec="temas" aria-selected="false">📈 Temas actuales</button>
+  </div>
+  <a class="btn btn-back" href="index.html" onclick="return volverAlSistema()">🏠 Volver a AdminPH</a>
+</div></div>
+
+<div class="wrap">
+<aside>
+  <label for="q">Buscar en todo el diccionario</label>
+  <input id="q" type="search" placeholder="quórum, tutela, mora, acta…" autocomplete="off">
+  <div id="count" aria-live="polite"></div>
+  <ul id="toc"></ul>
+</aside>
+
+<main>
+<div class="alert"><strong>Uso informativo.</strong> Este resumen está basado en el texto de la Ley 675 de 2001 y en sentencias de la Corte Constitucional publicadas en su relatoría. No reemplaza asesoría jurídica: antes de aplicar una regla a un caso concreto, verifique la vigencia de la norma y lo que diga el <em>reglamento de propiedad horizontal</em> de su copropiedad.</div>
+
+<section class="sec on" id="estructura">
+  <h2 class="st">Estructura de la Ley 675 de 2001</h2>
+  <p class="lead">“Por medio de la cual se expide el régimen de propiedad horizontal”. Sirve de mapa para ubicar cada tema.</p>
+
+  <details class="item"><summary>Título I — Disposiciones generales <span class="ref">arts. 1–35</span></summary><div class="body">
+    <div class="tblwrap"><table>
+      <tr><th>Capítulo</th><th>Tema</th><th>Artículos</th></tr>
+      <tr><td>I</td><td>Objeto y definiciones</td><td>1–3</td></tr>
+      <tr><td>II</td><td>Constitución de la propiedad horizontal</td><td>4–8</td></tr>
+      <tr><td>III</td><td>Extinción</td><td>9–12</td></tr>
+      <tr><td>IV</td><td>Reconstrucción</td><td>13–15</td></tr>
+      <tr><td>V</td><td>Bienes privados</td><td>16–18</td></tr>
+      <tr><td>VI</td><td>Bienes comunes</td><td>19–24</td></tr>
+      <tr><td>VII</td><td>Coeficientes de copropiedad</td><td>25–28</td></tr>
+      <tr><td>VIII</td><td>Contribución a las expensas comunes</td><td>29–31</td></tr>
+      <tr><td>IX</td><td>Persona jurídica</td><td>32–35</td></tr>
+    </table></div>
+    <p>Ojo: el capítulo <strong>VII es de coeficientes</strong>; la asamblea, el administrador y el consejo no están en el Título I.</p>
+  </div></details>
+
+  <details class="item"><summary>Órganos de dirección y administración <span class="ref">arts. 36–57</span></summary><div class="body">
+    <div class="tblwrap"><table>
+      <tr><th>Tema</th><th>Artículos</th></tr>
+      <tr><td>Órganos de dirección y administración</td><td>36</td></tr>
+      <tr><td>Asamblea: integración, funciones, reuniones (ordinarias, por derecho propio, segunda convocatoria, no presenciales)</td><td>37–44</td></tr>
+      <tr><td>Quórum y mayorías; decisiones con mayoría calificada</td><td>45–46</td></tr>
+      <tr><td>Actas</td><td>47</td></tr>
+      <tr><td>Procedimiento ejecutivo e impugnación de decisiones</td><td>48–49</td></tr>
+      <tr><td>Administrador: naturaleza, funciones, administración provisional</td><td>50–52</td></tr>
+      <tr><td>Consejo de administración</td><td>53–55</td></tr>
+      <tr><td>Revisor fiscal</td><td>56–57</td></tr>
+    </table></div>
+  </div></details>
+
+  <details class="item"><summary>Solución de conflictos y sanciones <span class="ref">arts. 58–62</span></summary><div class="body">
+    <p>Art. 58: comité de convivencia y mecanismos alternativos. Arts. 59–62: clases de sanciones por incumplir obligaciones <em>no pecuniarias</em>, quién las impone, cómo se ejecutan y cómo se impugnan.</p>
+  </div></details>
+
+  <details class="item"><summary>Unidades inmobiliarias cerradas (UIC) <span class="ref">arts. 63 ss.</span></summary><div class="body">
+    <p>Regulan conjuntos con cerramiento y el uso de vías, zonas verdes, parqueaderos y áreas de recreación y servicio (arts. 63 a 71 en el texto consultado). Las disposiciones finales incluyen el <strong>régimen de transición</strong> (art. 86) y la vigencia (art. 87).</p>
+  </div></details>
+</section>
+
+<section class="sec" id="diccionario">
+  <h2 class="st">Diccionario A–Z</h2>
+  <p class="lead">Términos que se usan en la asamblea, con la referencia legal y cómo se reflejan en AdminPH.</p>
+
+  <details class="item"><summary>Acta de asamblea <span class="ref">art. 47</span></summary><div class="body">
+    <p>Documento firmado por el <strong>presidente y el secretario</strong> de la asamblea. Debe indicar si la reunión es ordinaria o extraordinaria, la forma de convocatoria, el orden del día, nombre y calidad de los asistentes, su unidad privada y coeficiente, y <strong>los votos emitidos en cada caso</strong>.</p>
+    <p>El administrador debe publicar copia completa en la sede administrativa dentro de los <strong>20 días hábiles</strong> siguientes. La copia suscrita es prueba suficiente de lo que consta en ella mientras no se demuestre su falsedad.</p>
+    <p><span class="tag">En AdminPH</span>Fase 4: asistencia y resultados salen del sistema para armar el acta.</p>
+  </div></details>
+
+  <details class="item"><summary>Administrador <span class="ref">arts. 50–52</span></summary><div class="body">
+    <p>Representante legal de la persona jurídica y encargado de la administración. Lo designa la asamblea (o el consejo, si existe y así lo prevé el reglamento). Responde por perjuicios causados con dolo o culpa leve o grave; la culpa leve se presume si incumple o se extralimita.</p>
+    <p>Funciones (art. 51): convocar la asamblea, llevar libros de actas y registro de propietarios, presentar cuentas y presupuesto, cobrar cuotas y multas (puede iniciar cobro judicial sin autorización previa), hacer efectivas las sanciones, representar judicial y extrajudicialmente y expedir el paz y salvo cuando cambia el propietario o tenedor.</p>
+  </div></details>
+
+  <details class="item"><summary>Apoderado o delegado <span class="ref">art. 37</span></summary><div class="body">
+    <p>La asamblea la constituyen los propietarios <em>o sus representantes o delegados</em>. Para que un tercero vote, debe existir poder escrito. Conserve el poder y copia del documento del apoderado como soporte del acta.</p>
+    <p><span class="tag">En AdminPH</span>En Fase 2 los apoderados se registran con nombre y documento.</p>
+  </div></details>
+
+  <details class="item"><summary>Asamblea general <span class="ref">arts. 37–47</span></summary><div class="body">
+    <p>Máximo órgano de la copropiedad. La integran los propietarios de bienes privados, o sus representantes, reunidos con el quórum de la ley y del reglamento. <strong>El voto de cada propietario equivale al coeficiente de su bien privado.</strong> Sus decisiones, tomadas conforme a la ley y al reglamento, obligan a todos: ausentes, disidentes, administrador y demás órganos.</p>
+  </div></details>
+
+  <details class="item"><summary>Bienes comunes <span class="ref">arts. 3 y 19</span></summary><div class="body">
+    <p>Partes del edificio o conjunto pertenecientes en proindiviso a todos los propietarios, que permiten la existencia, estabilidad, funcionamiento, seguridad, uso y goce de los bienes privados. Son <strong>inalienables, inembargables e imprescriptibles</strong> de forma separada de los bienes privados. Se distinguen los <em>bienes comunes esenciales</em> (indispensables para la existencia y estabilidad) de los no esenciales, que pueden desafectarse con 70% de los coeficientes (art. 46).</p>
+    <p>Los arts. 3 y 19 fueron reglamentados por el Decreto 1060 de 2009.</p>
+  </div></details>
+
+  <details class="item"><summary>Bienes privados o unidades privadas <span class="ref">arts. 3 y 16–18</span></summary><div class="body">
+    <p>Inmuebles de dominio particular y exclusivo, con salida a la vía pública directamente o por pasaje común. El art. 18 fija obligaciones de los propietarios, por ejemplo no usar la unidad de modo que comprometa la seguridad o solidez del inmueble, o produzca ruidos o molestias.</p>
+  </div></details>
+
+  <details class="item"><summary>Paz y salvo <span class="ref">art. 51</span></summary><div class="body">
+    <p>El administrador expide el paz y salvo de cuentas cuando cambie el tenedor o propietario del bien privado.</p>
+  </div></details>
+
+  <details class="item"><summary>Coeficiente de copropiedad <span class="ref">arts. 3 y 25–28</span></summary><div class="body">
+    <p>Índice que define los derechos y obligaciones patrimoniales de cada propietario: <strong>su peso de voto en la asamblea y su participación en las expensas comunes</strong>. La suma de los coeficientes del edificio o conjunto es 100%.</p>
+    <p><span class="tag">En AdminPH</span>Votación por coeficiente: cada unidad pesa lo que dice su coeficiente. Verifique que la suma cargada sea 100% antes de la asamblea.</p>
+  </div></details>
+
+  <details class="item"><summary>Comité de convivencia <span class="ref">art. 58</span></summary><div class="body">
+    <p>En edificios o conjuntos de uso residencial, órgano elegido por la asamblea (un año, número impar de tres o más personas, ad honorem) que busca fórmulas de arreglo en conflictos de vecindad. <strong>No puede imponer sanciones.</strong> Lo acordado consta en acta firmada por las partes y los miembros.</p>
+  </div></details>
+
+  <details class="item"><summary>Consejo de administración <span class="ref">arts. 53–55</span></summary><div class="body">
+    <p>Es <strong>obligatorio</strong> en edificios o conjuntos comerciales o mixtos con más de 30 bienes privados (sin contar parqueaderos ni depósitos) y <strong>potestativo</strong> en los residenciales. Se integra con un número impar de tres o más propietarios (o sus delegados). Toma las determinaciones necesarias para que la persona jurídica cumpla sus fines, según el reglamento.</p>
+  </div></details>
+
+  <details class="item"><summary>Expensas comunes necesarias <span class="ref">arts. 3 y 29–31</span></summary><div class="body">
+    <p>Erogaciones causadas por la administración y la prestación de servicios comunes esenciales para la existencia, seguridad y conservación de los bienes comunes. Se pagan según el coeficiente. Las <strong>extraordinarias</strong> requieren aprobación de la asamblea; si en la vigencia superan cuatro veces las expensas necesarias mensuales, exigen 70%.</p>
+  </div></details>
+
+  <details class="item"><summary>Impugnación de decisiones <span class="ref">art. 49</span></summary><div class="body">
+    <p>El administrador, el revisor fiscal o los propietarios ausentes o disidentes pueden impugnar decisiones de la asamblea que no se ajusten a la ley o al reglamento. El procedimiento se rige hoy por el Código General del Proceso (Ley 1564 de 2012), que derogó el trámite específico. <em>Verifique con un abogado los términos aplicables.</em></p>
+  </div></details>
+
+  <details class="item"><summary>Ineficacia y nulidad de decisiones <span class="ref">arts. 44–45</span></summary><div class="body">
+    <p><strong>Ineficaces:</strong> las decisiones en reunión no presencial o por comunicación escrita cuando algún propietario no participa (art. 44).</p>
+    <p><strong>Absolutamente nulas:</strong> las que contravengan las reglas de quórum y mayorías del art. 45. Un reglamento que pida más del 70% (salvo extinción) se tiene por no escrito.</p>
+  </div></details>
+
+  <details class="item"><summary>Mora en expensas <span class="ref">arts. 30 y 37 par.</span></summary><div class="body">
+    <p>El incumplimiento en el pago de expensas causa intereses de mora. El parágrafo del art. 37 limita el ejercicio del voto de quien está en mora. <strong>Confirme con el reglamento y con su abogado</strong> cómo se certifica la mora el día de la asamblea, porque puede dejar sin voto a una unidad.</p>
+    <p><span class="tag w">Atención</span>Marque la mora en AdminPH solo con certificación firmada por el administrador o el contador.</p>
+  </div></details>
+
+  <details class="item"><summary>Multas y sanciones <span class="ref">arts. 59–62</span></summary><div class="body">
+    <p>Por incumplir obligaciones <em>no pecuniarias</em> y previo requerimiento escrito, pueden imponerse: (1) publicación de la lista de infractores con el hecho que origina la sanción; (2) multas sucesivas mientras persista la infracción, cada una hasta 2 veces las expensas necesarias mensuales y sin superar en total 10 veces esas expensas; (3) restricción de uso de bienes comunes <strong>no esenciales</strong>. No se restringen los bienes esenciales.</p>
+    <p>Las impone la asamblea o el consejo (si el reglamento lo faculta), respetando <strong>debido proceso, defensa, contradicción e impugnación</strong> y criterios de proporcionalidad. Las hace efectivas el administrador.</p>
+  </div></details>
+
+  <details class="item"><summary>Orden del día <span class="ref">arts. 39 y 47</span></summary><div class="body">
+    <p>Lista de temas a tratar, incluida en la convocatoria y en el acta. Las decisiones sobre asuntos no anunciados corren riesgo de impugnación.</p>
+  </div></details>
+
+  <details class="item"><summary>Persona jurídica <span class="ref">arts. 32–35</span></summary><div class="body">
+    <p>Constituida la propiedad horizontal por escritura pública y registrada, nace la persona jurídica sin ánimo de lucro cuyo objeto es administrar correcta y eficazmente los bienes y servicios comunes. Su representante es el administrador.</p>
+  </div></details>
+
+  <details class="item"><summary>Quórum <span class="ref">art. 45</span></summary><div class="body">
+    <p>Regla general: la asamblea sesiona con propietarios que representen <strong>más de la mitad de los coeficientes</strong> y decide con el voto favorable de <strong>la mitad más uno de los coeficientes</strong> (ver pestaña Quórum y mayorías).</p>
+    <p><span class="tag">En AdminPH</span>Fase 2 calcula el quórum con el coeficiente de las unidades presentes.</p>
+  </div></details>
+
+  <details class="item"><summary>Reglamento de propiedad horizontal <span class="ref">arts. 3 y 5</span></summary><div class="body">
+    <p>Estatuto que rige los derechos y obligaciones específicos de los copropietarios. Se eleva a escritura pública y se registra. Puede regular en detalle (procedimiento sancionatorio, facultades del consejo) pero <strong>no puede exigir mayorías superiores al 70%</strong> salvo para extinguir la propiedad horizontal.</p>
+  </div></details>
+
+  <details class="item"><summary>Reunión de derecho propio <span class="ref">art. 40</span></summary><div class="body">
+    <p>Si no se convoca la asamblea ordinaria en el plazo legal, esta se reúne por derecho propio en la fecha y hora que fija la ley, en las instalaciones del edificio. Confirme fecha y hora en el texto vigente.</p>
+  </div></details>
+
+  <details class="item"><summary>Reunión no presencial o mixta <span class="ref">arts. 42–44</span></summary><div class="body">
+    <p>Válida cuando, <em>siempre que ello se pueda probar</em>, los propietarios deliberan y deciden por comunicación simultánea o sucesiva, por cualquier medio, con el quórum del caso. Requiere prueba (grabación, identificación clara del propietario, contenido y hora) y <strong>fe del revisor fiscal</strong>. Es ineficaz si algún propietario no participa (art. 44).</p>
+    <p>Las decisiones que exigen mayoría calificada del art. 46 <strong>no pueden tomarse en reuniones no presenciales</strong>.</p>
+  </div></details>
+
+  <details class="item"><summary>Revisor fiscal <span class="ref">arts. 56–57</span></summary><div class="body">
+    <p>Órgano de control con funciones alineadas a la Ley 43 de 1990. Da fe de la validez de la reunión no presencial y vigila la contabilidad y el cumplimiento de la ley.</p>
+  </div></details>
+
+  <details class="item"><summary>Segunda convocatoria <span class="ref">art. 41</span></summary><div class="body">
+    <p>Si la asamblea no puede sesionar por falta de quórum, se cita a nueva reunión el <strong>tercer día hábil siguiente</strong>, a las 8:00 p. m., que sesiona y decide con <strong>un número plural de propietarios, cualquiera que sea el porcentaje de coeficientes</strong>. Salvedad: las decisiones de mayoría calificada del art. 46 solo valen en segunda convocatoria si se alcanza igualmente la mayoría exigida.</p>
+  </div></details>
+
+  <details class="item"><summary>Cobro de cuotas (procedimiento ejecutivo) <span class="ref">art. 48</span></summary><div class="body">
+    <p>La ley prevé un procedimiento ejecutivo para el cobro de obligaciones pecuniarias, con base en el certificado del administrador. Su trámite se rige hoy por la regulación procesal vigente (Ley 1564 de 2012); consúltelo con su abogado.</p>
+  </div></details>
+
+  <details class="item"><summary>Voto nominal, por coeficiente y a mano alzada <span class="ref">concepto AdminPH</span></summary><div class="body">
+    <p>La ley dice que cada propietario vota con el peso de su coeficiente. Las modalidades del sistema son formas de registrar ese voto: <strong>nominal</strong> (queda registrado quién votó qué), <strong>por coeficiente</strong> (se suma el peso de cada unidad) y <strong>a mano alzada</strong> (el conteo se hace en sala y luego se ingresa). Si la decisión es de mayoría calificada, use siempre conteo por coeficiente y deje soporte.</p>
+  </div></details>
+  <h3 style="margin:22px 0 6px">Términos ampliados (cartilla del Ministerio de Vivienda y guía CONPUCOL)</h3>
+  <p class="hint" style="margin:0 0 10px;color:var(--muted)">Resúmenes de apoyo; para decidir o actuar consulte el texto de la ley.</p>
+  <details class="item"><summary>Forma especial de dominio <span class="ref">art. 1</span></summary><div class="body"><p>La propiedad horizontal combina la <strong>propiedad exclusiva</strong> sobre los bienes privados con la <strong>copropiedad</strong> sobre el terreno y los bienes comunes.</p><p><span class="tag">Fuente</span>Guía gráfica conceptual de la Propiedad Horizontal, CONPUCOL.</p></div></details>
+  <details class="item"><summary>Principios orientadores <span class="ref">art. 2</span></summary><div class="body"><p>Función social y ecológica de la propiedad, convivencia pacífica y solidaridad social, respeto de la dignidad humana, libre iniciativa empresarial y derecho al debido proceso.</p><p><span class="tag">Fuente</span>Guía gráfica conceptual de la Propiedad Horizontal, CONPUCOL.</p></div></details>
+  <details class="item"><summary>Régimen de propiedad horizontal <span class="ref">art. 3</span></summary><div class="body"><p>Sistema legal que regula el sometimiento de un edificio o conjunto, construido o por construir, a la propiedad horizontal.</p><p><span class="tag">Fuente</span>Guía gráfica conceptual de la Propiedad Horizontal, CONPUCOL.</p></div></details>
+  <details class="item"><summary>Edificio y conjunto <span class="ref">art. 3</span></summary><div class="body"><p><strong>Edificio:</strong> construcción de uno o varios pisos levantada sobre un lote, con varias unidades independientes y áreas y servicios comunes. <strong>Conjunto:</strong> desarrollo inmobiliario de varios edificios sobre uno o varios lotes que comparten vías internas, parqueaderos, zonas verdes y servicios.</p><p>Según el uso de sus unidades privadas pueden ser residenciales, comerciales o mixtos.</p><p><span class="tag">Fuente</span>Guía gráfica conceptual de la Propiedad Horizontal, CONPUCOL.</p></div></details>
+  <details class="item"><summary>Propietario inicial <span class="ref">art. 3</span></summary><div class="body"><p>Quien constituye la propiedad horizontal mediante escritura pública (normalmente el constructor). Al terminar la administración provisional debe convocar a la primera asamblea de propietarios.</p><p><span class="tag">Fuente</span>Cartilla de Propiedad Horizontal, Ministerio de Vivienda, Ciudad y Territorio.</p></div></details>
+  <details class="item"><summary>Área privada construida y área privada libre <span class="ref">art. 3</span></summary><div class="body"><p><strong>Construida:</strong> superficie cubierta de cada unidad privada, sin contar los bienes comunes que estén dentro de sus linderos. <strong>Libre:</strong> área privada semicubierta o descubierta (balcones, patios, terrazas), también sin bienes comunes.</p><p><span class="tag">Fuente</span>Guía gráfica conceptual de la Propiedad Horizontal, CONPUCOL.</p></div></details>
+  <details class="item"><summary>Bienes comunes esenciales <span class="ref">art. 3</span></summary><div class="body"><p>Los indispensables para la existencia, estabilidad, conservación y seguridad del edificio o conjunto y para el uso y goce de los bienes privados: terreno, cimientos, estructura, circulaciones, fachadas y techos o losas.</p><p><span class="tag">Fuente</span>Cartilla de Propiedad Horizontal, Ministerio de Vivienda, Ciudad y Territorio.</p></div></details>
+  <details class="item"><summary>Bienes comunes de uso exclusivo <span class="ref">bienes comunes</span></summary><div class="body"><p>Bienes comunes asignados para uso de un propietario, por ejemplo un parqueadero. Quien los usa no puede modificarlos sin autorización de la asamblea.</p><p><span class="tag">Fuente</span>Cartilla de Propiedad Horizontal, Ministerio de Vivienda, Ciudad y Territorio.</p></div></details>
+  <details class="item"><summary>Parqueaderos de visitantes <span class="ref">bienes comunes</span></summary><div class="body"><p>Espacios destinados únicamente a visitantes: no pueden tener uso exclusivo ni ser usados por propietarios o residentes.</p><p><span class="tag">Fuente</span>Cartilla de Propiedad Horizontal, Ministerio de Vivienda, Ciudad y Territorio.</p></div></details>
+  <details class="item"><summary>Inalienabilidad de los bienes comunes <span class="ref">art. 19, par. 2</span></summary><div class="body"><p>Los bienes comunes no se pueden vender de manera separada de los bienes privados.</p><p><span class="tag">Fuente</span>Guía gráfica conceptual de la Propiedad Horizontal, CONPUCOL.</p></div></details>
+  <details class="item"><summary>Módulos de contribución <span class="ref">art. 3</span></summary><div class="body"><p>Porcentajes que se usan en inmuebles comerciales o mixtos para repartir los costos de bienes y servicios que utiliza solo un sector, como alternativa a los coeficientes en el cálculo de las cuotas.</p><p><span class="tag">Fuente</span>Cartilla de Propiedad Horizontal, Ministerio de Vivienda, Ciudad y Territorio.</p></div></details>
+  <details class="item"><summary>Cuota de administración <span class="ref">expensas</span></summary><div class="body"><p>Pago periódico de los propietarios que financia la administración, el mantenimiento, la reparación, la reposición, la reconstrucción y la vigilancia de los bienes comunes.</p><p><span class="tag">Fuente</span>Cartilla de Propiedad Horizontal, Ministerio de Vivienda, Ciudad y Territorio.</p></div></details>
+  <details class="item"><summary>Expensas comunes extraordinarias <span class="ref">expensas</span></summary><div class="body"><p>Gastos imprevistos por situaciones particulares que no hacen parte del presupuesto anual; se aprueban por la mayoría calificada que exige la ley. Se distinguen de las <em>expensas necesarias</em> (ordinarias), que sí van en el presupuesto.</p><p><span class="tag">Fuente</span>Cartilla de Propiedad Horizontal, Ministerio de Vivienda, Ciudad y Territorio.</p></div></details>
+  <details class="item"><summary>Fondo de imprevistos <span class="ref">art. 35</span></summary><div class="body"><p>Fondo para gastos imprevistos, alimentado con un recargo no inferior al 1 % del presupuesto anual de gastos comunes.</p><p><span class="tag">Fuente</span>Cartilla de Propiedad Horizontal, Ministerio de Vivienda, Ciudad y Territorio.</p></div></details>
+  <details class="item"><summary>Certificación de existencia y representación legal <span class="ref">art. 8</span></summary><div class="body"><p>La expide el alcalde municipal o distrital, o quien él delegue, y acredita la existencia de la persona jurídica y quién la representa. Suele pedirse en bancos y trámites.</p><p><span class="tag">Fuente</span>Cartilla de Propiedad Horizontal, Ministerio de Vivienda, Ciudad y Territorio.</p></div></details>
+  <details class="item"><summary>Manual de convivencia <span class="ref">reglamento interno</span></summary><div class="body"><p>Reglamento interno que aprueba la asamblea para prevenir y resolver problemas de convivencia; debe ajustarse al reglamento de propiedad horizontal.</p><p><span class="tag">Fuente</span>Cartilla de Propiedad Horizontal, Ministerio de Vivienda, Ciudad y Territorio.</p></div></details>
+</section>
+
+<section class="sec" id="quorum">
+  <h2 class="st">Quórum y mayorías</h2>
+  <p class="lead">Regla rápida para el día de la asamblea (arts. 41, 45 y 46).</p>
+
+  <div class="tblwrap"><table>
+    <tr><th>Situación</th><th>Para sesionar</th><th>Para decidir</th><th>Ref.</th></tr>
+    <tr><td>Reunión ordinaria o extraordinaria (regla general)</td><td>Más de la mitad de los coeficientes</td><td>Mitad más uno de los coeficientes</td><td>Art. 45</td></tr>
+    <tr><td>Segunda convocatoria (falta de quórum)</td><td>Número plural de propietarios, cualquier coeficiente</td><td>Lo que decidan los presentes, salvo las decisiones del art. 46</td><td>Art. 41</td></tr>
+    <tr><td>Decisiones calificadas</td><td>Quórum ordinario</td><td><strong>70% de los coeficientes del edificio o conjunto</strong></td><td>Art. 46</td></tr>
+    <tr><td>Reunión no presencial</td><td>Comunicación simultánea o sucesiva con el quórum del caso; todos deben participar</td><td>Las decisiones del art. 46 no se toman así</td><td>Arts. 42–44, 46</td></tr>
+  </table></div>
+
+  <div class="card">
+    <h3>Decisiones que exigen 70% de los coeficientes (art. 46)</h3>
+    <ul class="clean">
+      <li>Cambios que afecten la destinación de bienes comunes o disminuyan de forma significativa su uso y goce.</li>
+      <li>Expensas extraordinarias cuyo total en la vigencia supere cuatro veces las expensas necesarias mensuales.</li>
+      <li>Aprobación de expensas comunes diferentes de las necesarias.</li>
+      <li>Asignar un bien común al uso exclusivo de un bien privado.</li>
+      <li>Reforma de estatutos y reglamento.</li>
+      <li>Desafectar un bien común no esencial.</li>
+      <li>Reconstrucción del edificio o conjunto destruido.</li>
+      <li>Cambio de destinación genérica de los bienes privados, ajustada a la normativa urbanística.</li>
+      <li>Adquisición de inmuebles para el edificio o conjunto.</li>
+      <li>Liquidación y disolución.</li>
+    </ul>
+    <p>Ninguna decisión, <strong>salvo la extinción</strong> de la propiedad horizontal, puede exigir más del 70%; las mayorías superiores en reglamentos se tienen por no escritas (art. 45).</p>
+  </div>
+
+  <div class="alert info"><strong>Ley 2079 de 2021.</strong> Ajustó puntualmente los arts. 25, 43, 44, 45 y 46 para inmuebles de vivienda de interés social o prioritario con pocas unidades (5 o menos). Si su copropiedad está en ese caso, revise el texto vigente.</div>
+  <div class="alert">Antes de votar un tema calificado, pida a su abogado o revisor fiscal que confirme la mayoría aplicable a su reglamento.</div>
+</section>
+
+<section class="sec" id="reformas">
+  <h2 class="st">Reformas y normas relacionadas</h2>
+  <p class="lead">Lo que complementa o modifica la Ley 675. Confirme la vigencia en el gestor normativo oficial.</p>
+
+    <details class="item" open><summary>Decreto 768 de 2025 <span class="ref">proceso único de policía · 7 jul. 2025</span></summary><div class="body">
+    <p>Adiciona el <strong>Capítulo XVIII al Título 8, Parte 2, Libro 2 del Decreto 1070 de 2015</strong> (sector Defensa) y reglamenta parcialmente la <strong>Ley 1801 de 2016</strong> (Código Nacional de Seguridad y Convivencia Ciudadana), en especial el proceso único de policía. <strong>No modifica el texto de la Ley 675</strong>: precisa cómo actúan alcaldes e inspectores de policía en conflictos de convivencia en copropiedades.</p>
+    <p><strong>Lo que toca a la propiedad horizontal</strong> (artículos del Decreto 1070 que adiciona):</p>
+    <ul class="clean">
+      <li><strong>Privacidad (art. 2.2.8.18.12.1.1):</strong> los habitantes deben proteger la privacidad de sus viviendas, incluidas las áreas comunes de uso privado; las pruebas obtenidas violando esa protección (por ejemplo fotos, videos o audios sin consentimiento) no son admisibles en el proceso de policía.</li>
+      <li><strong>Actividades en espacios semiprivados (art. 2.2.8.18.12.1.2):</strong> si el alcalde declara que una actividad “trasciende a lo público”, debe fijar su horario de funcionamiento.</li>
+      <li><strong>Actividades de esparcimiento permanentes (art. 2.2.8.18.12.1.5):</strong> las copropiedades que las desarrollen de forma similar a una actividad económica deben cumplir los requisitos de la Ley 1801.</li>
+      <li><strong>Publicidad del régimen (art. 2.2.8.18.12.1.6):</strong> asamblea y consejo deben mantener actualizado el reglamento de propiedad horizontal; una copia <em>completa y vigente</em> y el <strong>censo de animales de compañía</strong> deben estar disponibles para las autoridades de policía.</li>
+      <li><strong>Actas de asamblea (art. 2.2.8.18.12.1.7):</strong> si la administración se niega a entregar copia de actas o documentos sin reserva legal, el alcalde puede dar una orden de policía; desacatarla es un comportamiento contrario a la convivencia.</li>
+      <li><strong>Comité de convivencia (art. 2.2.8.18.12.1.8):</strong> el comité de la Ley 675 conoce los conflictos de convivencia de la copropiedad, sin perjuicio de las acciones policivas.</li>
+      <li><strong>Perímetros y áreas de influencia (art. 2.2.8.18.11.3):</strong> asambleas y consejos pueden regular áreas circundantes para restringir el consumo y la venta de sustancias psicoactivas.</li>
+      <li>También se aclara que vidrios insonorizantes, películas solares, vitrales o esmerilados no afectan por sí solos la integridad urbanística, siempre que respeten el reglamento y las normas de urbanismo, y se refuerza el registro, la póliza y las medidas de seguridad para los caninos de manejo especial.</li>
+    </ul>
+    <p><span class="tag">Qué hacer</span>Tenga a mano el reglamento actualizado, el censo de animales de compañía y copias de las actas; entregue las actas que se soliciten legalmente.</p>
+    <p><span class="tag">Ojo</span>El Decreto 768 <strong>no regula la acción de tutela</strong>. Sobre la tutela en copropiedades vea la sección «Tutela en propiedad horizontal». Resumen informativo: confirme el texto oficial y su vigencia en el gestor normativo.</p>
+  </div></details>
+<details class="item"><summary>Ley 2079 de 2021 <span class="ref">vivienda y hábitat</span></summary><div class="body">
+    <p>Introdujo ajustes a la Ley 675, entre ellos reglas para inmuebles de interés social o prioritario con cinco o menos unidades y precisiones sobre servicios públicos en la persona jurídica. Modificó artículos como el 25 y el 43 a 46 (coeficientes y decisiones no presenciales).</p>
+  </div></details>
+  <details class="item"><summary>Decreto 1060 de 2009 <span class="ref">arts. 3 y 19</span></summary><div class="body"><p>Reglamenta las definiciones (art. 3) y los bienes comunes (art. 19) de la ley.</p></div></details>
+  <details class="item"><summary>Decreto 1380 de 2002 <span class="ref">art. 86</span></summary><div class="body"><p>Régimen de transición para propiedades horizontales anteriores a la Ley 675.</p></div></details>
+  <details class="item"><summary>Ley 1564 de 2012 (Código General del Proceso) <span class="ref">procedimiento</span></summary><div class="body"><p>Derogó los trámites específicos que traía la Ley 675 para el proceso ejecutivo, la impugnación de decisiones y la de sanciones (arts. 49, 58 y 62). Hoy siguen el procedimiento del CGP, vigente desde el 1.º de enero de 2014.</p></div></details>
+  <details class="item"><summary>Decretos 398 y 434 de 2020 <span class="ref">emergencia COVID</span></summary><div class="body"><p>Regularon reuniones no presenciales y el plazo de las asambleas ordinarias durante la emergencia sanitaria. Eran normas transitorias; hoy rigen los arts. 42 a 44 de la ley.</p></div></details>
+  <details class="item"><summary>Ley 2220 de 2022 (Estatuto de Conciliación) <span class="ref">conflictos</span></summary><div class="body"><p>Regula la conciliación, mecanismo alterno al que remite el art. 58 de la Ley 675 y que suele ser paso previo antes de acudir al juez.</p></div></details>
+  <details class="item"><summary>Ley 1801 de 2016 (Código de Policía) <span class="ref">convivencia</span></summary><div class="body"><p>Contiene comportamientos que afectan la convivencia, también en propiedad horizontal (ruido, uso de zonas comunes). El art. 61 de la Ley 675 prevé apoyo policial para ejecutar sanciones. Revise el capítulo aplicable.</p></div></details>
+  <details class="item"><summary>Ley 1581 de 2012 (protección de datos) <span class="ref">datos personales</span></summary><div class="body"><p>Aplica a listados de morosos, cámaras y bases de residentes. Publicar el nombre de quien debe cuotas o infringe debe ajustarse a la ley y al reglamento; ver las tutelas T-062/18 y T-108/05.</p></div></details>
+  <div class="alert">Han circulado proyectos de reforma integral de la Ley 675 en el Congreso. Este diccionario no incluye cambios que no haya podido verificar como ley vigente: consulte el Congreso o a su asesor antes de dar por cambiada una regla.</div>
+</section>
+
+<section class="sec" id="tutela">
+  <h2 class="st">Tutela en propiedad horizontal</h2>
+  <p class="lead">Cuándo un propietario o residente puede acudir al juez constitucional contra la copropiedad, y cómo evitarlo.</p>
+
+  <div class="card">
+    <h3>1. ¿Procede la tutela contra una copropiedad?</h3>
+    <p>Sí, pero <strong>de manera excepcional</strong>. Aunque la copropiedad es un particular, el art. 86 de la Constitución y el Decreto 2591 de 1991 (art. 42) permiten la tutela contra particulares en ciertos casos, entre ellos cuando el accionante está en <strong>indefensión o subordinación</strong> frente a quien lo afecta.</p>
+    <p>El juez revisa: <strong>derecho fundamental comprometido</strong>, <strong>subsidiariedad</strong> (que no exista otro medio eficaz o que haya un perjuicio irremediable) e <strong>inmediatez</strong>.</p>
+  </div>
+
+  <div class="card">
+    <h3>2. Vías ordinarias que suelen exigirse antes</h3>
+    <ul class="clean">
+      <li>Comité de convivencia (Ley 675, art. 58).</li>
+      <li>Conciliación (Ley 2220 de 2022).</li>
+      <li>Impugnación de la decisión de asamblea o de la sanción ante la jurisdicción ordinaria.</li>
+      <li>Trámite policivo por conductas de convivencia (Ley 1801 de 2016).</li>
+    </ul>
+    <p>En la sentencia T-454 de 2017 la Corte resumió que, por regla general, en controversias de PH deben agotarse primero estas vías, y que la tutela procede excepcionalmente ante amenaza o violación de derechos fundamentales que requiere una intervención expedita.</p>
+  </div>
+
+  <h3 style="margin:18px 0 8px">3. Sentencias de la Corte Constitucional (resumen)</h3>
+
+    <details class="item"><summary>T-267 de 1998 — cable y asamblea de propietarios <span class="ref">amparó</span></summary><div class="body">
+    <p>La asamblea de una urbanización decidió sobre el servicio de señal por cable que entraba a cada vivienda. La Corte confirmó la tutela: el accionante estaba en <strong>subordinación</strong> frente a la asamblea, porque debía acatar sus decisiones según el reglamento, y la decisión invadía asuntos privados (intimidad personal y familiar, libre desarrollo de la personalidad) sobre los que la asamblea no tenía competencia.</p>
+    <p><span class="tag">Lección</span>La asamblea no puede decidir sobre lo que ocurre dentro de la esfera privada de cada unidad.</p>
+  </div></details>
+
+  <details class="item"><summary>T-555 de 2003 — apertura dominical obligatoria <span class="ref">amparó</span></summary><div class="body">
+    <p>El consejo de administración de un centro comercial, por delegación de la asamblea, impuso la apertura en domingos con multa. La Corte admitió la tutela contra el particular porque el arrendatario estaba en <strong>subordinación</strong> frente a los órganos de administración (no era propietario y no pudo votar la medida), protegió la libertad económica y dejó sin efectos la medida.</p>
+    <p><span class="tag">Lección</span>Las decisiones que afectan a arrendatarios y usuarios deben respetar sus derechos aunque no voten en la asamblea.</p>
+  </div></details>
+
+  <div class="alert info"><strong>Decreto 768 de 2025:</strong> no es una norma sobre tutela. Regula el proceso único de policía en convivencia (vea «Reformas y normas relacionadas»). La tutela sigue regida por el art. 86 de la Constitución y el Decreto 2591 de 1991.</div>
+
+<details class="item"><summary>T-034 de 2013 — mascotas y ascensores <span class="ref">proporcionalidad</span></summary><div class="body">
+    <p>Una modificación del manual de convivencia prohibió transportar mascotas en los ascensores comunes, con multa. La Corte reconoció que la tenencia de mascotas involucra derechos fundamentales pero admite limitaciones razonables; consideró <strong>desproporcionada la prohibición absoluta</strong> por existir alternativas menos gravosas (horarios, bozal, correa, higiene) y ordenó inaplicarla.</p>
+    <p><span class="tag">Lección</span>Regule con reglas proporcionales, no con prohibiciones absolutas.</p>
+  </div></details>
+
+  <details class="item"><summary>T-108 de 2005 — agendas de control y menores <span class="ref">debido proceso</span></summary><div class="body">
+    <p>Un conjunto registró conductas de un menor en una agenda de control y anunció una multa. La Corte consideró legítimos estos instrumentos si registran solo conductas relevantes para la seguridad comunitaria, se manejan con reserva y las sanciones respetan proporcionalidad y debido proceso. Negó la tutela y exhortó a sancionar solo conductas que afecten la convivencia.</p>
+  </div></details>
+
+  <details class="item"><summary>T-454 de 2017 — humedades y subsidiariedad <span class="ref">improcedente</span></summary><div class="body">
+    <p>Una familia sufría humedades e inundaciones por obras del conjunto. La tutela se declaró improcedente por no demostrarse riesgo inminente ni afectación grave y existir recursos ordinarios. Sintetiza el criterio de subsidiariedad en PH.</p>
+  </div></details>
+
+  <details class="item"><summary>T-062 de 2018 — discapacidad, parqueadero y publicación <span class="ref">amparó</span></summary><div class="body">
+    <p>Un residente con discapacidad pidió parqueadero permanente; la administración respondió públicamente exponiendo su condición y le cobró honorarios de abogado. La Corte amparó sus derechos, ordenó suspender el cobro, retirar la publicación, presentar disculpas y adoptar medidas afirmativas, entre ellas reservar un mínimo de parqueaderos para personas con discapacidad.</p>
+    <p><span class="tag">Lección</span>No publique datos sensibles ni respuestas que expongan al residente.</p>
+  </div></details>
+
+  <details class="item"><summary>T-283 de 2020 — sanción sin debido proceso <span class="ref">amparó</span></summary><div class="body">
+    <p>Una propiedad horizontal (una central de abastos) sancionó con 5 años de suspensión a una persona por conductas de su vida íntima. La Corte reiteró que las copropiedades pueden sancionar según sus reglamentos, pero deben <strong>respetar derechos fundamentales, garantizar un debido proceso mínimo, no regular asuntos privados sin impacto colectivo y no fundarse en motivos discriminatorios</strong>. Amparó a la accionante.</p>
+  </div></details>
+
+  <div class="card">
+    <h3>4. Lista de chequeo para reducir el riesgo de tutela</h3>
+    <ul class="clean">
+      <li>Sanciones: requerimiento escrito, oportunidad de descargos, decisión motivada y vía de impugnación (Ley 675, arts. 59–62).</li>
+      <li>Reglamento y manual de convivencia con conductas y sanciones claras y proporcionales.</li>
+      <li>Responder los derechos de petición en los términos legales, sin exponer datos personales.</li>
+      <li>Ajustes razonables por discapacidad, movilidad reducida y adultos mayores.</li>
+      <li>No usar la restricción de servicios o zonas esenciales como presión por deudas.</li>
+      <li>Documentar todo en actas y comunicaciones.</li>
+    </ul>
+  </div>
+  <div class="alert">Los resúmenes provienen de la relatoría de la Corte Constitucional (corteconstitucional.gov.co). Lea la sentencia completa antes de citarla en un escrito. Existen más sentencias sobre el tema; aquí se incluyen solo las verificadas.</div>
+</section>
+
+<section class="sec" id="temas">
+  <h2 class="st">Temas actuales en propiedad horizontal</h2>
+  <p class="lead">Debates frecuentes y punto de partida para revisarlos con su reglamento.</p>
+  <details class="item"><summary>Arrendamiento turístico (tipo Airbnb) <span class="ref">art. 46 · reglamento</span></summary><div class="body"><p>Depende de la destinación del inmueble y del reglamento. Cambiar la destinación genérica de los bienes privados exige mayoría calificada. Prohibir o regular debe constar en el reglamento reformado con las mayorías legales.</p></div></details>
+  <details class="item"><summary>Mascotas <span class="ref">T-034/13</span></summary><div class="body"><p>Permitidas con reglas razonables (correa, ascensor, excrementos, ruido). Ver pestaña Tutela en PH.</p></div></details>
+  <details class="item"><summary>Ruido y convivencia <span class="ref">arts. 18, 58–61</span></summary><div class="body"><p>Requerimiento escrito, comité de convivencia, sanciones proporcionales y, si hay riesgo, apoyo de la policía.</p></div></details>
+  <details class="item"><summary>Uso exclusivo de terrazas y zonas comunes <span class="ref">art. 46</span></summary><div class="body"><p>Asignar un bien común al uso exclusivo de un bien privado exige el 70% de los coeficientes.</p></div></details>
+  <details class="item"><summary>Cartera morosa <span class="ref">arts. 30, 48</span></summary><div class="body"><p>Cobro con certificado del administrador, intereses de mora y cobro judicial. Cuide el manejo de datos y no restrinja servicios esenciales.</p></div></details>
+  <details class="item"><summary>Asambleas virtuales y mixtas <span class="ref">arts. 42–44</span></summary><div class="body"><p>Válidas si se puede probar la participación de todos y con fe del revisor fiscal. Las decisiones del art. 46 no se toman en reuniones no presenciales.</p></div></details>
+  <details class="item"><summary>Accesibilidad y personas con discapacidad <span class="ref">T-062/18</span></summary><div class="body"><p>Ajustes razonables en parqueaderos, rampas y ascensores; su ausencia puede terminar en tutela.</p></div></details>
+</section>
+
+</main>
+</div>
+
+<footer>
+  <p>© 2026 AdminPH · Información basada en la Ley 675 de 2001 y jurisprudencia de la Corte Constitucional</p>
+  <p>Consulte con un abogado especializado para casos específicos y verifique la vigencia de la norma.</p>
+</footer>
+
+<script>
+function volverAlSistema(){
+  try{ if(window.opener && !window.opener.closed){ window.close(); return false; } }catch(e){}
+  return true;
+}
+var secs=[].slice.call(document.querySelectorAll('section.sec'));
+var tabs=[].slice.call(document.querySelectorAll('#tabs button'));
+function mostrar(id){
+  secs.forEach(function(s){ s.classList.toggle('on', s.id===id); });
+  tabs.forEach(function(b){ b.setAttribute('aria-selected', b.dataset.sec===id ? 'true':'false'); });
+  buildToc(id);
+  window.scrollTo({top:0});
+}
+tabs.forEach(function(b){ b.addEventListener('click',function(){ document.getElementById('q').value=''; buscar(''); mostrar(b.dataset.sec); }); });
+
+function buildToc(id){
+  var ul=document.getElementById('toc'); ul.innerHTML='';
+  var sec=document.getElementById(id); if(!sec) return;
+  [].forEach.call(sec.querySelectorAll('details.item > summary'), function(sm,i){
+    var d=sm.parentNode; if(!d.id) d.id=id+'-'+i;
+    var li=document.createElement('li'), a=document.createElement('a');
+    a.href='#'+d.id; a.textContent=sm.firstChild.textContent.trim();
+    a.addEventListener('click',function(){ d.open=true; });
+    li.appendChild(a); ul.appendChild(li);
+  });
+}
+function esc(s){ return s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'); }
+function quitarMarcas(root){
+  [].forEach.call(root.querySelectorAll('mark'), function(m){ m.replaceWith(document.createTextNode(m.textContent)); });
+  root.normalize();
+}
+function marcar(node, re){
+  if(node.nodeType===3){
+    if(re.test(node.nodeValue)){
+      var span=document.createElement('span');
+      span.innerHTML=node.nodeValue.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(re,'<mark>$1</mark>');
+      node.replaceWith.apply(node,[].slice.call(span.childNodes));
+    }
+  } else if(node.nodeType===1 && !/^(SCRIPT|STYLE|MARK)$/.test(node.tagName)){
+    [].slice.call(node.childNodes).forEach(function(c){ marcar(c,re); });
+  }
+}
+function norm(s){ return s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,''); }
+function buscar(txt){
+  var main=document.querySelector('main');
+  quitarMarcas(main);
+  var t=(txt||'').trim();
+  var items=[].slice.call(main.querySelectorAll('details.item, .card, .tblwrap, .alert'));
+  if(!t){
+    document.body.classList.remove('searching');
+    items.forEach(function(e){ e.classList.remove('hidden'); });
+    document.getElementById('count').textContent='';
+    var act=tabs.filter(function(b){return b.getAttribute('aria-selected')==='true';})[0];
+    secs.forEach(function(s){ s.classList.toggle('on', !!act && s.id===act.dataset.sec); });
+    return;
+  }
+  document.body.classList.add('searching');
+  var n=norm(t), hits=0;
+  items.forEach(function(e){
+    var isAlert=e.classList.contains('alert');
+    var ok=norm(e.textContent).indexOf(n)>-1;
+    e.classList.toggle('hidden', !ok || isAlert);
+    if(ok && !isAlert){ hits++; if(e.tagName==='DETAILS') e.open=true; }
+  });
+  document.getElementById('count').textContent = hits ? hits+' resultado(s)' : 'Sin resultados';
+  if(t.length>1){
+    var re=new RegExp('('+esc(t)+')','i');
+    [].forEach.call(main.querySelectorAll('details.item:not(.hidden), .card:not(.hidden)'), function(e){ marcar(e,re); });
+  }
+}
+document.getElementById('q').addEventListener('input',function(){ buscar(this.value); });
+buildToc('estructura');
+</script>
+</body>
+</html>

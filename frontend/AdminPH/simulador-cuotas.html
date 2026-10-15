@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Simulador de cuotas de administración · AdminPH</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#1f5c43">
+<style>
+:root{
+  --bg:#f3f7f4; --card:#fff; --ink:#1f2d24; --muted:#5a6b60; --line:#dce7df;
+  --g1:#1f5c43; --g2:#2d6a4f; --g3:#40916c; --soft:#e8f5ec;
+  --warn:#b45309; --warnbg:#fff7ed; --info:#1e40af; --infobg:#eff6ff; --bad:#b91c1c; --badbg:#fef2f2; --ok:#166534; --okbg:#ecfdf5;
+  --radius:16px; --shadow:0 2px 10px rgba(31,92,67,.09);
+}
+@media (prefers-color-scheme: dark){
+  :root{--bg:#0e1a14;--card:#16261d;--ink:#e6f0ea;--muted:#9db3a5;--line:#2a4034;--soft:#1c3a2b;--warnbg:#3a2a12;--infobg:#132a4d;--badbg:#3a1616;--okbg:#0f2f22;--warn:#fbbf24;--info:#93c5fd;--bad:#fca5a5;--ok:#6ee7b7;--shadow:none}
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding-bottom:env(safe-area-inset-bottom)}
+header.top{background:linear-gradient(135deg,#0a2a20,#2d6a4f);color:#fff;padding:calc(22px + env(safe-area-inset-top)) 20px 20px;text-align:center}
+header.top h1{margin:0 0 4px;font-size:clamp(1.3rem,4vw,2rem)}
+header.top p{margin:0;opacity:.85;font-size:.95rem}
+.wrap{max-width:1180px;margin:0 auto;padding:16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px;margin-bottom:16px}
+.card h2{margin:0 0 10px;font-size:1.1rem;color:var(--g2)}
+.grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(210px,1fr))}
+label.f{display:flex;flex-direction:column;gap:4px;font-size:.85rem;font-weight:600;color:var(--muted)}
+input[type=text],input[type=number],select{font:inherit;padding:9px 10px;border:1px solid var(--line);border-radius:10px;background:var(--card);color:var(--ink);width:100%}
+input:focus,select:focus{outline:2px solid var(--g3);outline-offset:0}
+.btn{font:inherit;font-weight:700;font-size:.9rem;border:0;border-radius:11px;padding:10px 14px;cursor:pointer;background:var(--g2);color:#fff;box-shadow:0 3px 0 #1b4332;min-height:42px}
+.btn:active{transform:translateY(2px);box-shadow:0 1px 0 #1b4332}
+.btn.sec{background:var(--soft);color:var(--g1);box-shadow:0 3px 0 var(--line)}
+.btn.warn{background:#b45309;box-shadow:0 3px 0 #7c2d12}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.tabs button{font:inherit;font-weight:700;border:1px solid var(--line);background:var(--card);color:var(--ink);padding:10px 14px;border-radius:12px;cursor:pointer}
+.tabs button.on{background:var(--g2);color:#fff;border-color:var(--g2)}
+.msg{border-radius:12px;padding:10px 13px;margin:8px 0;font-size:.92rem}
+.msg.ok{background:var(--okbg);color:var(--ok)} .msg.warn{background:var(--warnbg);color:var(--warn)}
+.msg.bad{background:var(--badbg);color:var(--bad)} .msg.info{background:var(--infobg);color:var(--info)}
+.kpis{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));margin-bottom:14px}
+.kpi{background:var(--soft);border-radius:14px;padding:12px}
+.kpi b{display:block;font-size:1.25rem;color:var(--g1)} .kpi span{font-size:.78rem;color:var(--muted)}
+.scroll{overflow:auto;max-height:70vh;border:1px solid var(--line);border-radius:12px}
+table{border-collapse:collapse;width:100%;font-size:.92rem}
+th,td{padding:7px 9px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+th{position:sticky;top:0;background:var(--g2);color:#fff;z-index:2;text-align:center}
+td:nth-child(1),td:nth-child(2){text-align:left}
+tfoot td{position:sticky;bottom:0;background:var(--soft);font-weight:800}
+td input{padding:5px 7px;border-radius:8px;text-align:right;width:100%;min-width:90px}
+td input.nm{text-align:left;min-width:150px}
+.bar{display:inline-block;height:9px;border-radius:5px;background:var(--g3);vertical-align:middle}
+.pos{color:var(--bad);font-weight:700} .neg{color:var(--ok);font-weight:700}
+.formula{background:var(--soft);border-left:4px solid var(--g3);border-radius:10px;padding:10px 13px;margin:8px 0;font-size:.95rem}
+code{background:var(--soft);padding:1px 6px;border-radius:6px}
+.x{border:0;background:transparent;cursor:pointer;font-size:1rem;color:var(--bad)}
+details summary{cursor:pointer;font-weight:700;color:var(--g2)}
+.hide{display:none}
+.calc{display:grid;gap:10px;grid-template-columns:1fr 90px 1fr 1.2fr;align-items:end}
+.calc label.f input,.calc label.f select{font-size:1.05rem}
+.calc .res{background:var(--soft);border-radius:10px;padding:9px 12px;font-weight:800;font-size:1.15rem;color:var(--g1);min-height:42px;display:flex;align-items:center;justify-content:flex-end;overflow:auto}
+.calc .acc{grid-column:1/-1;display:flex;gap:8px;flex-wrap:wrap}
+@media(max-width:640px){.calc{grid-template-columns:1fr 1fr}.calc .res{grid-column:1/-1}}
+footer{text-align:center;color:var(--muted);font-size:.8rem;padding:6px 16px 30px}
+@media print{
+  header.top,.noprint,.tabs,.btn{display:none!important}
+  body{background:#fff;color:#000} .card{box-shadow:none;break-inside:avoid} .scroll{max-height:none;overflow:visible}
+  th{background:#ddd!important;color:#000!important;position:static} tfoot td{position:static}
+  td input{border:0;padding:0}
+}
+</style>
+</head>
+<body>
+<header class="top">
+  <h1>🧮 Simulador de cuotas de administración</h1>
+  <p>Anexo pedagógico · AdminPH · Ley 675 de 2001 — ejercicio de aprendizaje, no reemplaza el presupuesto aprobado por la asamblea</p>
+</header>
+
+<div class="wrap">
+  <div class="row noprint" style="margin-bottom:12px"><a class="btn sec" href="index.html" style="text-decoration:none;display:inline-flex;align-items:center">← Volver a AdminPH</a><button class="btn warn" id="btnReiniciar" type="button" title="Deja el simulador y las calculadoras en cero">🔄 Reiniciar todo a cero</button></div>
+
+  <section class="card noprint" id="calcTop">
+    <h2>🧮 Calculadora rápida</h2>
+    <div class="calc" data-calc>
+      <label class="f">Primer valor<input type="text" inputmode="decimal" data-c="a" placeholder="0"></label>
+      <label class="f">Operación<select data-c="op"><option value="+">+ suma</option><option value="-">− resta</option><option value="*">× multiplica</option><option value="/">÷ divide</option></select></label>
+      <label class="f">Segundo valor<input type="text" inputmode="decimal" data-c="b" placeholder="0"></label>
+      <div><span style="font-size:.85rem;font-weight:600;color:var(--muted)">Resultado</span><div class="res" data-c="res">0</div></div>
+      <div class="acc noprint"><button class="btn sec" data-c="usar" type="button">↩ Pasar el resultado al primer valor</button><button class="btn sec" data-c="cero" type="button">0 Poner en cero</button></div>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>1 · Datos del presupuesto</h2>
+    <div class="grid">
+      <label class="f">Nombre del conjunto o edificio (opcional)<input type="text" id="inNombre" placeholder="Ej.: Conjunto Los Almendros"></label>
+      <label class="f">Valor total a repartir (COP)<input type="text" id="inTotal" inputmode="decimal" placeholder="4.300.000"></label>
+      <label class="f">El valor ingresado es…<select id="inPeriodo"><option value="mensual">Mensual (cuotas ordinarias del mes)</option><option value="anual">Anual (se divide entre 12)</option></select></label>
+      <label class="f">Redondeo de la cuota<select id="inRedondeo"><option value="0">Sin redondeo (pesos)</option><option value="100">A la centena ($100)</option><option value="1000">Al millar ($1.000)</option></select></label>
+    </div>
+    <div class="msg info" style="margin-top:10px">El <b>presupuesto mensual</b> es la suma de los gastos ordinarios aprobados por la asamblea (administración, vigilancia, aseo, servicios, mantenimiento, fondo de imprevistos…). El simulador solo <b>reparte</b> ese valor entre las unidades.</div>
+  </section>
+
+  <section class="card">
+    <h2>2 · Unidades</h2>
+    <div class="grid">
+      <label class="f">Cantidad de unidades
+        <input type="number" id="inCantidad" min="0" max="5000" step="1" placeholder="Ej.: 10"></label>
+      <label class="f">Coeficiente de copropiedad
+        <select id="inFuente"><option value="digitado">Usar el coeficiente digitado / importado</option><option value="area">Calcularlo por área privada (área ÷ área total)</option></select></label>
+    </div>
+    <div class="row" style="margin-top:10px">
+      <button class="btn" id="btnGenerar" title="Ajusta la tabla a la cantidad indicada">Aplicar cantidad</button>
+      <button class="btn sec" id="btnCargar">📤 Cargar unidades desde Excel</button>
+      <input type="file" id="fileExcel" accept=".xlsx" class="hide">
+      <button class="btn sec" id="btnPlantilla">📄 Descargar plantilla</button>
+      <button class="btn sec" id="btnEjemplo">🎓 Cargar ejemplo</button>
+      <button class="btn sec" id="btnAdminph" title="Trae las unidades de la asamblea abierta en este navegador">🏢 Traer unidades de AdminPH</button>
+      
+    </div>
+    <div id="msgCarga"></div>
+    <p style="color:var(--muted);font-size:.85rem;margin:8px 0 0">Formatos: <b>.xlsx</b>. El lector reconoce los encabezados <i>Unidad, Manzana, Torre/Bloque, Piso, Área, Coeficiente</i> y, si existe, <i>Presupuesto mensual</i> (como en su archivo de coeficientes). Si su archivo es <b>.xls</b>, ábralo en Excel y guárdelo como .xlsx.</p>
+  </section>
+
+  <section class="card">
+    <h2>3 · Resultado</h2>
+    <div class="tabs noprint" id="tabs">
+      <button data-m="coef" class="on">Por coeficiente de copropiedad</button>
+      <button data-m="nominal">Nominal (partes iguales)</button>
+      <button data-m="comparar">Comparar ambas</button>
+    </div>
+    <div id="alertas"></div>
+    <div class="kpis" id="kpis"></div>
+    <label class="noprint" style="display:flex;gap:8px;align-items:center;margin:0 0 10px;font-size:.9rem"><input type="checkbox" id="chkAnterior"> Comparar con la cuota anterior (calcula incremento)</label>
+    <div class="scroll"><table id="tabla"></table></div>
+    <div class="row noprint" style="margin-top:12px">
+      <button class="btn sec" id="btnAgregar">➕ Agregar unidad</button>
+      <button class="btn sec" id="btnNormalizar" title="Reparte las diferencias para que los coeficientes sumen exactamente 100 %">⚖️ Normalizar a 100 %</button>
+      <button class="btn" id="btnExcel">⬇️ Descargar resultado (Excel)</button>
+      <button class="btn sec" id="btnImprimir">🖨️ Imprimir</button>
+      <button class="btn warn" id="btnReiniciar2" type="button">🔄 Reiniciar todo a cero</button>
+    </div>
+  </section>
+
+  <section class="card" id="pedagogia">
+    <h2>4 · ¿Cómo se calculó? (explicación paso a paso)</h2>
+    <div id="explica"></div>
+    <details style="margin-top:10px"><summary>Conceptos y referencias de la Ley 675 de 2001</summary>
+      <ul style="margin:8px 0 0 18px">
+        <li><b>Coeficiente de copropiedad</b> (art. 3): índice que establece la participación porcentual de cada propietario en los bienes comunes; también define su voto en la asamblea y su contribución a las expensas comunes. Suele calcularse como <code>área privada de la unidad ÷ área privada total</code>.</li>
+        <li><b>Obligación de contribuir</b> (art. 29): los propietarios deben pagar las expensas comunes necesarias <i>de acuerdo con el reglamento de propiedad horizontal</i>. Por eso la regla general es repartir por coeficiente.</li>
+        <li><b>Reparto nominal</b> (partes iguales): solo es válido cuando el reglamento lo prevé para un gasto determinado. Úselo aquí como ejercicio para ver la diferencia; verifique su reglamento y consulte a su asesor jurídico antes de aplicarlo.</li>
+        <li><b>Sectores y módulos de contribución</b> (art. 31): en edificios o conjuntos de uso mixto, ciertos gastos se reparten solo entre los dueños que usan ese sector (por ejemplo, la zona comercial o la residencial), con coeficientes propios de cada módulo.</li>
+        <li><b>Presupuesto y cuotas</b> (art. 38): la asamblea aprueba el presupuesto anual y las cuotas para expensas ordinarias y extraordinarias.</li>
+        <li><b>Incumplimiento</b> (art. 30): el no pago genera consecuencias previstas en la ley y en el reglamento.</li>
+      </ul>
+      <p style="color:var(--muted);font-size:.85rem">Verifique siempre el texto vigente de la ley y el reglamento de su copropiedad. Este anexo es educativo.</p>
+    </details>
+  </section>
+
+  <section class="card noprint" id="calcBottom">
+    <h2>🧮 Calculadora rápida</h2>
+    <div class="calc" data-calc>
+      <label class="f">Primer valor<input type="text" inputmode="decimal" data-c="a" placeholder="0"></label>
+      <label class="f">Operación<select data-c="op"><option value="+">+ suma</option><option value="-">− resta</option><option value="*">× multiplica</option><option value="/">÷ divide</option></select></label>
+      <label class="f">Segundo valor<input type="text" inputmode="decimal" data-c="b" placeholder="0"></label>
+      <div><span style="font-size:.85rem;font-weight:600;color:var(--muted)">Resultado</span><div class="res" data-c="res">0</div></div>
+      <div class="acc noprint"><button class="btn sec" data-c="usar" type="button">↩ Pasar el resultado al primer valor</button><button class="btn sec" data-c="cero" type="button">0 Poner en cero</button></div>
+    </div>
+  </section>
+</div>
+<footer>AdminPH · Simulador de cuotas (anexo pedagógico) · Los datos se calculan en su navegador y no se envían a ningún servidor.</footer>
+
+<script src="js/xlsxmini.js"></script>
+<script src="js/simulador-cuotas.js"></script>
+<script src="js/pwa.js" defer></script>
+</body>
+</html>

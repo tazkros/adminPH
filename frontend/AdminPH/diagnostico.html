@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AdminPH - Diagnóstico de conexión</title>
+<style>
+body{margin:0;background:#f3f7f3;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:#1b2a1b;padding:16px}
+.c{max-width:560px;margin:0 auto}
+h1{font-size:19px;color:#2d6a4f;margin:0 0 4px}
+.card{background:#fff;border:1px solid #d7e5d7;border-radius:12px;padding:14px;margin:12px 0}
+.k{font-size:12px;color:#6c7a6c;margin:0}
+.v{word-break:break-all;font-weight:600;margin:2px 0 8px}
+.ok{color:#14532d}.er{color:#b3261e}.wa{color:#8a6100}
+button{width:100%;padding:13px;border:0;border-radius:10px;background:#2d6a4f;color:#fff;font-size:16px;font-weight:600}
+li{margin:4px 0}
+</style>
+</head>
+<body>
+<div class="c">
+  <h1>🔧 Diagnóstico de conexión AdminPH</h1>
+  <p class="k">Ábralo desde el celular que no logra votar y envíe una captura de esta pantalla.</p>
+
+  <div class="card">
+    <p class="k">Esta página se abrió en</p><p class="v" id="loc"></p>
+    <p class="k">El servidor (API) que intentará usar</p><p class="v" id="api"></p>
+    <p class="k">Origen que debe estar en CORS_ORIGINS del backend</p><p class="v" id="org"></p>
+  </div>
+
+  <div class="card"><button id="run">▶ Probar conexión con el servidor</button><div id="res" style="margin-top:12px"></div></div>
+</div>
+<script src="js/config.js"></script>
+<script>
+(function () {
+  var $ = function (i) { return document.getElementById(i); };
+  var api = (window.ADMINPH_CONFIG && window.ADMINPH_CONFIG.API_URL) || "";
+  $("loc").textContent = location.href;
+  $("api").textContent = api;
+  $("org").textContent = location.origin;
+
+  $("run").onclick = function () {
+    var out = $("res");
+    out.innerHTML = "<p>Probando…</p>";
+    var t0 = Date.now();
+    fetch(api + "/public/voting/access?token=diagnostico", { method: "GET" })
+      .then(function (r) {
+        return r.text().then(function (txt) {
+          var ms = Date.now() - t0;
+          out.innerHTML =
+            '<p class="ok"><strong>✅ El servidor responde</strong> (HTTP ' + r.status + ', ' + ms + ' ms).</p>' +
+            '<p class="k">Un 401 "QR inválido" es lo esperado: significa que el celular SÍ llega al backend.</p>' +
+            '<p class="k">Respuesta: ' + txt.replace(/</g, "&lt;").slice(0, 160) + "</p>" +
+            (/^(localhost|127\.0\.0\.1)$/.test(location.hostname)
+              ? '<p class="wa">⚠️ Esta página se abrió con "' + location.hostname + '": no es una prueba válida desde un celular.</p>' : "");
+        });
+      })
+      .catch(function (e) {
+        out.innerHTML =
+          '<p class="er"><strong>❌ No se pudo conectar</strong> con ' + api + '</p>' +
+          '<p class="k">Error: ' + String(e && e.message || e) + '</p>' +
+          '<p><strong>Causas más comunes:</strong></p><ol>' +
+          '<li>El <strong>firewall de Windows</strong> del computador bloquea el puerto <strong>3000</strong> (backend).</li>' +
+          '<li>El backend no está encendido o no es accesible desde la red.</li>' +
+          '<li><code>CORS_ORIGINS</code> del backend no incluye <strong>' + location.origin + '</strong>. Agréguelo y reinicie el backend.</li>' +
+          '<li>El celular está en otra red (datos móviles, Wi-Fi de invitados o con "aislamiento de clientes").</li></ol>';
+      });
+  };
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AdminPH - Panel de votación en vivo</title>
+<script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+<style>
+:root{--g:#2d6a4f;--gl:#e8f5e9;--bd:#d7e5d7;--tx:#1b2a1b;--mu:#6c7a6c;--er:#b3261e;--wa:#8a6100}
+*{box-sizing:border-box}
+body{margin:0;background:#f3f7f3;color:var(--tx);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;font-size:15px}
+header{background:var(--g);color:#fff;padding:12px 20px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+header h1{font-size:18px;margin:0;flex:1}
+header a,header button{color:#fff;background:rgba(255,255,255,.18);border:0;padding:7px 12px;border-radius:8px;cursor:pointer;text-decoration:none;font-size:13px}
+main{max-width:980px;margin:0 auto;padding:16px}
+.card{background:#fff;border:1px solid var(--bd);border-radius:14px;padding:16px;margin-bottom:16px}
+.card h2{margin:0 0 4px;font-size:17px;color:var(--g)}
+.hint{color:var(--mu);font-size:13px;margin:0 0 12px}
+label{display:block;font-size:13px;color:var(--mu);margin:8px 0 3px}
+input,select,textarea{width:100%;padding:9px 10px;border:1px solid #c7d6c7;border-radius:8px;font:inherit;background:#fff}
+textarea{min-height:90px;resize:vertical}
+button.b{background:var(--g);color:#fff;border:0;border-radius:8px;padding:9px 14px;font:inherit;font-weight:600;cursor:pointer}
+button.b.sec{background:var(--gl);color:var(--g)}
+button.b.dan{background:#fdecea;color:var(--er)}
+button.b[disabled]{opacity:.5;cursor:not-allowed}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end}
+.row>*{flex:1;min-width:140px}
+.row>.auto{flex:none;min-width:0}
+.badge{display:inline-block;padding:2px 9px;border-radius:99px;font-size:12px;font-weight:600}
+.badge.preparation,.badge.draft{background:#fff3cd;color:var(--wa)}
+.badge.active,.badge.open{background:#d9f2e0;color:#14532d}
+.badge.closed,.badge.cancelled{background:#e5e7e5;color:#444}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{padding:7px 8px;border-bottom:1px solid #eef2ee;text-align:left}
+th{color:var(--mu);font-weight:600;font-size:12px}
+.scroll{max-height:380px;overflow:auto;border:1px solid #eef2ee;border-radius:10px}
+.sess{border:1px solid var(--bd);border-radius:12px;padding:14px;margin-top:12px}
+.sess h3{margin:0 0 4px;font-size:16px}
+.bar{background:#eef2ee;border-radius:6px;height:18px;overflow:hidden;margin:3px 0 8px}
+.bar>i{display:block;height:100%;background:var(--g)}
+.opt{display:flex;justify-content:space-between;font-size:14px;gap:8px}
+.msg{padding:10px 12px;border-radius:8px;margin:8px 0;font-size:14px}
+.msg.err{background:#fdecea;color:var(--er)}
+.msg.ok{background:var(--gl);color:#14532d}
+.msg.warn{background:#fff8e1;color:var(--wa)}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;padding:16px;z-index:9}
+.modal.on{display:flex}
+.modal>div{background:#fff;border-radius:14px;padding:20px;max-width:380px;width:100%;text-align:center}
+.url{word-break:break-all;font-size:12px;color:var(--mu);background:#f3f7f3;padding:8px;border-radius:8px;margin:10px 0}
+.hide{display:none!important}
+</style>
+<style>#startBtn,#closeAsmBtn,#newAsmToggle,#newAsmBox,#importBtn,#allPresentBtn,#createVoteBtn,#candAdd,#candAddAll,#vCreateForm,[data-open],[data-close],[data-dup],#attBody input[type=checkbox]{display:none !important}#attBody input[type=checkbox]{pointer-events:none}</style>
+</head>
+<body>
+<header>
+  <h1>🗳️ AdminPH · Panel de votación en vivo</h1>
+  <span id="whoami"></span>
+  <a href="index.html?fase=3">← Volver a AdminPH (Fase 3)</a>
+  <button id="logoutBtn" class="hide">Salir</button>
+</header>
+
+<main>
+  <!-- LOGIN -->
+  <section id="loginBox" class="card hide" style="max-width:380px;margin:40px auto">
+    <h2>Ingresar</h2>
+    <p class="hint">Use un usuario del backend (admin u operador).</p>
+    <label>Usuario</label><input id="loginUser" autocomplete="username">
+    <label>Contraseña</label><input id="loginPass" type="password" autocomplete="current-password">
+    <div id="loginMsg"></div>
+    <p><button id="loginBtn" class="b" style="width:100%">Entrar</button></p>
+  </section>
+
+  <div id="app" class="hide">
+    <!-- 1. ASAMBLEA -->
+    <section class="card">
+      <h2>1. Asamblea</h2>
+      <p class="hint">Monitor en vivo (solo lectura). La asamblea se crea, inicia y cierra en <strong>Fase 1 → 🔗 Servidor y Asamblea</strong>; las votaciones se abren y cierran en <strong>Fase 3</strong>.</p>
+      <div class="row">
+        <div><label>Conjunto</label><select id="propSel"></select></div>
+        <div><label>Asamblea</label><select id="asmSel"></select></div>
+        <div class="auto"><span id="asmBadge"></span></div>
+      </div>
+      <div class="row" style="margin-top:10px">
+        <button id="startBtn" class="b auto hide">▶ Iniciar asamblea</button>
+        <button id="closeAsmBtn" class="b dan auto hide">■ Cerrar asamblea</button>
+        <button id="newAsmToggle" class="b sec auto">＋ Nueva asamblea</button>
+      </div>
+      <div id="newAsmBox" class="hide" style="margin-top:12px">
+        <div class="row">
+          <div><label>Nombre</label><input id="newAsmName" placeholder="Asamblea Ordinaria 2026"></div>
+          <div><label>Fecha</label><input id="newAsmDate" type="date"></div>
+          <div class="auto"><button id="newAsmBtn" class="b">Crear</button></div>
+        </div>
+      </div>
+      <div id="asmMsg"></div>
+    </section>
+
+    <!-- 2. ASISTENCIA Y QR -->
+    <section class="card">
+      <h2>2. Asistencia y códigos QR (se marca en Fase 2)</h2>
+      <p class="hint">La asistencia se registra en Fase 2 y se refleja aquí sola.</p>
+      <div class="row" style="margin-bottom:10px;align-items:center">
+        <div id="unitsInfo" style="flex:2"></div>
+        <button id="importBtn" class="b sec auto">⬇ Traer unidades y asistencia de Fase 1/2</button>
+      </div>
+      <div class="row" style="margin-bottom:10px">
+        <div id="attSummary" style="flex:2"></div>
+        <button id="allPresentBtn" class="b sec auto">Marcar todas presentes</button>
+        <button id="reloadAttBtn" class="b sec auto">↻</button>
+      </div>
+      <div id="attMsg"></div>
+      <div class="scroll"><table>
+        <thead><tr><th>Unidad</th><th>Coef.</th><th>Presente</th><th>QR</th></tr></thead>
+        <tbody id="attBody"></tbody>
+      </table></div>
+    </section>
+
+    <!-- 3. VOTACIONES -->
+    <section class="card">
+      <h2>3. Votaciones</h2>
+      <p class="hint">Aquí se ven en vivo las votaciones abiertas desde Fase 3. Puede archivar las de prueba.</p>
+      <div id="voteWarn"></div>
+      <div id="vCreateForm">
+      <div class="row">
+        <div style="flex:2"><label>Título de la votación</label><input id="vTitle" placeholder="Ej: Elección del presidente de la asamblea"></div>
+        <div><label>Conteo</label>
+          <select id="vMethod"><option value="nominal">Nominal (1 unidad = 1 voto)</option><option value="coefficient">Por coeficiente</option></select></div>
+        <div><label>Ganadores</label><input id="vWinners" type="number" min="1" value="1"></div>
+      </div>
+      <div class="row" style="align-items:flex-end;margin-top:6px">
+        <div style="flex:3"><label>Agregar candidato desde los asistentes presentes</label><select id="candSel"></select></div>
+        <button id="candAdd" class="b sec auto">＋ Agregar</button>
+        <button id="candAddAll" class="b sec auto">＋ Todos los presentes</button>
+      </div>
+      <label>Opciones / candidatos (uno por línea)</label>
+      <textarea id="vOptions" placeholder="Candidato A&#10;Candidato B&#10;Voto en blanco"></textarea>
+      <p><button id="createVoteBtn" class="b">Crear votación</button></p>
+      </div>
+      <div id="voteMsg"></div>
+      <div class="row" style="align-items:center;margin-top:14px">
+        <label style="display:flex;gap:8px;align-items:center;margin:0;flex:2"><input type="checkbox" id="showArch" style="width:auto"> Mostrar votaciones archivadas</label>
+        <button id="archClosedBtn" class="b sec auto">🗑 Archivar todas las cerradas</button>
+      </div>
+      <div id="sessions"></div>
+    </section>
+  </div>
+  <p class="hint" style="text-align:center">¿El celular no logra votar? Abra <a href="diagnostico.html">diagnostico.html</a> desde el celular.</p>
+</main>
+
+<div id="qrModal" class="modal"><div>
+  <h3 id="qrTitle" style="margin:0 0 10px">QR</h3>
+  <div id="qrCanvas" style="display:flex;justify-content:center"></div>
+  <div class="url" id="qrUrl"></div>
+  <div id="qrWarn"></div>
+  <div class="row" style="justify-content:center">
+    <button class="b sec" id="qrCopy">Copiar enlace</button>
+    <button class="b" id="qrClose">Cerrar</button>
+  </div>
+</div></div>
+
+<script src="js/config.js?v=1.0"></script>
+<script src="js/api.js?v=1.0"></script>
+<script src="js/panel-votacion.js?v=1.0"></script>
+</body>
+</html>

@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cronómetro de intervención · AdminPH</title>
+<style>
+:root{--ok:#14532d;--okfg:#bbf7d0;--warn:#b45309;--warnfg:#fef3c7;--end:#991b1b;--endfg:#fee2e2;--idle:#111827;--idlefg:#e5e7eb}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--idle);color:var(--idlefg);display:flex;flex-direction:column;transition:background .4s,color .4s}
+body.run{background:var(--ok);color:var(--okfg)}
+body.warn{background:var(--warn);color:var(--warnfg)}
+body.end{background:var(--end);color:var(--endfg)}
+body.end .time,body.warn .time{animation:blink 1s steps(2,start) infinite}
+body.warn .time{animation-duration:1.4s}
+@keyframes blink{50%{opacity:.35}}
+main{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:16px;min-height:0}
+.who{font-size:clamp(1.2rem,4vw,2.6rem);font-weight:700;min-height:1.3em;margin-bottom:.4em;opacity:.95;overflow-wrap:anywhere}
+.time{font-weight:900;font-variant-numeric:tabular-nums;line-height:1;font-size:clamp(5rem,26vw,22rem);letter-spacing:.02em}
+.msg{font-size:clamp(1.1rem,3.4vw,2.2rem);font-weight:700;min-height:1.4em;margin-top:.5em}
+.bar{width:min(90vw,1000px);height:14px;background:rgba(255,255,255,.2);border-radius:99px;overflow:hidden;margin-top:1.2em}
+.bar i{display:block;height:100%;width:100%;background:currentColor;transition:width .25s linear}
+.panel{background:rgba(0,0,0,.45);padding:14px 16px;display:flex;flex-wrap:wrap;gap:14px 22px;align-items:flex-end;justify-content:center;backdrop-filter:blur(6px)}
+body.proj .panel{display:none}
+.panel label{display:flex;flex-direction:column;font-size:.78rem;gap:4px;color:#e5e7eb}
+.panel input,.panel select{font:inherit;font-size:1rem;padding:8px 10px;border-radius:8px;border:1px solid #6b7280;background:#111827;color:#fff}
+.panel input[type=number]{width:5.2em}
+.panel input[type=text]{width:16em;max-width:80vw}
+.chk{flex-direction:row!important;align-items:center;gap:8px!important;font-size:.9rem!important}
+.chk input{width:18px;height:18px}
+.presets,.acts{display:flex;gap:8px;flex-wrap:wrap}
+button{font:inherit;font-weight:700;border:0;border-radius:10px;padding:10px 16px;cursor:pointer;background:#e5e7eb;color:#111827}
+button:hover{filter:brightness(1.08)}
+button.main{background:#22c55e;color:#052e16}
+button.stop{background:#f59e0b;color:#451a03}
+button.pre.on{outline:3px solid #fff}
+.hint{font-size:.78rem;opacity:.8;text-align:center;padding:4px 8px 8px;color:#d1d5db}
+body.proj .hint{display:none}
+.mini{position:fixed;top:10px;right:10px;display:none;gap:8px}
+body.proj .mini{display:flex}
+.mini button{padding:6px 10px;font-size:.8rem;opacity:.55}
+.mini button:hover{opacity:1}
+</style>
+</head>
+<body>
+<main>
+  <div class="who" id="who"></div>
+  <div class="time" id="time" role="timer" aria-live="off">03:00</div>
+  <div class="msg" id="msg">Listo para iniciar</div>
+  <div class="bar"><i id="fill"></i></div>
+</main>
+
+<div class="mini"><button type="button" id="btnMostrar" title="Mostrar controles (tecla C)">⚙️ Controles</button></div>
+
+<section class="panel" id="panel" aria-label="Controles del cronómetro">
+  <label>Interviniente / tema (opcional)<input type="text" id="nombre" maxlength="80" placeholder="Ej.: Unidad 302 — Juan Pérez"></label>
+  <div>
+    <div style="font-size:.78rem;margin-bottom:4px">Tiempo</div>
+    <div class="presets" id="presets">
+      <button type="button" class="pre" data-s="60">1 min</button>
+      <button type="button" class="pre" data-s="120">2 min</button>
+      <button type="button" class="pre" data-s="180">3 min</button>
+      <button type="button" class="pre" data-s="300">5 min</button>
+    </div>
+  </div>
+  <label>Minutos<input type="number" id="min" min="0" max="120" value="3"></label>
+  <label>Segundos<input type="number" id="seg" min="0" max="59" value="0"></label>
+  <label>Avisar cuando falten
+    <select id="aviso"><option value="10">10 s</option><option value="20">20 s</option><option value="30" selected>30 s</option><option value="45">45 s</option><option value="60">60 s</option></select>
+  </label>
+  <label class="chk"><input type="checkbox" id="sonido" checked> 🔊 Sonido</label>
+  <label class="chk"><input type="checkbox" id="autoclose"> Cerrar la ventana al terminar</label>
+  <div class="acts">
+    <button type="button" class="main" id="btnGo">▶ Iniciar</button>
+    <button type="button" id="btnMas">+30 s</button>
+    <button type="button" id="btnReset">↺ Reiniciar</button>
+    <button type="button" id="btnTest">🔔 Probar sonido</button>
+    <button type="button" id="btnProj">🖥️ Modo proyección</button>
+    <button type="button" id="btnFs">⛶ Pantalla completa</button>
+  </div>
+</section>
+<div class="hint">Atajos: Espacio = iniciar/pausar · R = reiniciar · F = pantalla completa · C = mostrar/ocultar controles</div>
+
+<script>
+(function(){
+  var $ = function(id){ return document.getElementById(id); };
+  var total = 180, endAt = 0, left = 180, timer = null, running = false, warned = false, finished = false, beepedSec = -1, ctx = null;
+  var q = new URLSearchParams(location.search);
+
+  function fmt(s){ s = Math.max(0, Math.ceil(s)); var m = Math.floor(s/60), r = s%60; return (m<10?'0':'')+m+':'+(r<10?'0':'')+r; }
+  function setBody(c){ document.body.className = (c||'') + (document.body.classList.contains('proj')?' proj':''); }
+  function projOn(){ return document.body.classList.contains('proj'); }
+  function state(c){ document.body.classList.remove('run','warn','end'); if(c) document.body.classList.add(c); }
+
+  function readInputs(){
+    var m = Math.max(0, parseInt($('min').value,10)||0), s = Math.max(0, Math.min(59, parseInt($('seg').value,10)||0));
+    var t = m*60+s; if(t < 1) t = 1; return t;
+  }
+  function writeInputs(t){ $('min').value = Math.floor(t/60); $('seg').value = t%60; }
+  function markPreset(){
+    [].forEach.call(document.querySelectorAll('.pre'), function(b){ b.classList.toggle('on', +b.dataset.s === total); });
+  }
+  function aviso(){ return parseInt($('aviso').value,10)||30; }
+
+  // ---- sonido (Web Audio)
+  function audio(){
+    if(!$('sonido').checked) return null;
+    try{ ctx = ctx || new (window.AudioContext||window.webkitAudioContext)(); if(ctx.state==='suspended') ctx.resume(); return ctx; }catch(e){ return null; }
+  }
+  function tono(freq, dur, delay, vol){
+    var c = audio(); if(!c) return;
+    var t0 = c.currentTime + (delay||0), o = c.createOscillator(), g = c.createGain();
+    o.type = 'sine'; o.frequency.value = freq;
+    g.gain.setValueAtTime(0.0001, t0); g.gain.exponentialRampToValueAtTime(vol||0.5, t0+0.02); g.gain.exponentialRampToValueAtTime(0.0001, t0+dur);
+    o.connect(g); g.connect(c.destination); o.start(t0); o.stop(t0+dur+0.05);
+  }
+  function sonAviso(){ tono(880,0.25,0,0.5); tono(880,0.25,0.4,0.5); tono(1174,0.4,0.8,0.55); }
+  function sonTick(){ tono(1000,0.08,0,0.3); }
+  function sonFin(){ tono(523,0.5,0,0.6); tono(392,0.5,0.6,0.6); tono(262,1.2,1.2,0.65); }
+
+  // ---- ciclo
+  function paint(){
+    $('time').textContent = fmt(left);
+    $('fill').style.width = Math.max(0, Math.min(100, (left/total)*100)) + '%';
+  }
+  function tick(){
+    left = Math.max(0, (endAt - Date.now())/1000);
+    var shown = Math.ceil(left);
+    paint();
+    if(left <= 0){ finish(); return; }
+    if(left <= aviso()){
+      if(!warned){ warned = true; state('warn'); $('msg').textContent = '⚠️ Se está acabando el tiempo'; sonAviso(); }
+      if(shown <= 5 && shown !== beepedSec){ beepedSec = shown; sonTick(); }
+    }
+  }
+  function finish(){
+    clearInterval(timer); timer = null; running = false; finished = true; left = 0; paint();
+    state('end'); $('msg').textContent = '⏰ TIEMPO TERMINADO'; $('btnGo').textContent = '▶ Iniciar'; $('btnGo').className='main';
+    sonFin();
+    if($('autoclose').checked){ setTimeout(function(){ try{ window.close(); }catch(e){} }, 4000); }
+  }
+  function start(){
+    if(running) return;
+    audio();                                   // desbloquea el audio con el clic del usuario
+    if(finished || left <= 0){ reset(true); }
+    if(!running && left === total && !warned){ /* inicio limpio */ }
+    endAt = Date.now() + left*1000; running = true;
+    if(!document.body.classList.contains('warn')) state('run');
+    $('msg').textContent = warned ? '⚠️ Se está acabando el tiempo' : 'En intervención';
+    $('btnGo').textContent = '⏸ Pausar'; $('btnGo').className='stop';
+    clearInterval(timer); timer = setInterval(tick, 200); tick();
+  }
+  function pause(){
+    if(!running) return;
+    clearInterval(timer); timer = null; running = false;
+    left = Math.max(0,(endAt-Date.now())/1000);
+    $('msg').textContent = '⏸ En pausa'; $('btnGo').textContent = '▶ Continuar'; $('btnGo').className='main';
+  }
+  function reset(silent){
+    clearInterval(timer); timer = null; running = false; warned = false; finished = false; beepedSec = -1;
+    total = readInputs(); left = total; state(''); paint(); markPreset();
+    $('msg').textContent = 'Listo para iniciar'; $('btnGo').textContent = '▶ Iniciar'; $('btnGo').className='main';
+  }
+  function toggle(){ running ? pause() : start(); }
+  function proj(on){ document.body.classList.toggle('proj', on); }
+  function fs(){
+    var d = document.documentElement;
+    if(!document.fullscreenElement){ (d.requestFullscreen||d.webkitRequestFullscreen||function(){}).call(d); }
+    else { (document.exitFullscreen||document.webkitExitFullscreen||function(){}).call(document); }
+  }
+
+  // ---- eventos
+  $('btnGo').onclick = toggle;
+  $('btnReset').onclick = function(){ reset(); };
+  $('btnMas').onclick = function(){
+    if(running){ endAt += 30000; total += 30; warned = left+30 <= aviso(); if(!warned){ state('run'); $('msg').textContent='En intervención'; beepedSec=-1; } tick(); }
+    else { left += 30; total = Math.max(total, Math.ceil(left)); if(left > aviso()){ warned=false; if(!finished) state(''); } finished=false; if(left>0 && document.body.classList.contains('end')) state(''); writeInputs(Math.ceil(left)); paint(); markPreset(); $('msg').textContent='Listo para iniciar'; }
+  };
+  $('btnTest').onclick = function(){ audio(); sonAviso(); };
+  $('btnProj').onclick = function(){ proj(true); };
+  $('btnMostrar').onclick = function(){ proj(false); };
+  $('btnFs').onclick = fs;
+  [].forEach.call(document.querySelectorAll('.pre'), function(b){
+    b.onclick = function(){ writeInputs(+b.dataset.s); reset(); };
+  });
+  ['min','seg'].forEach(function(id){ $(id).addEventListener('change', function(){ if(!running){ reset(); } }); });
+  $('nombre').addEventListener('input', function(){ $('who').textContent = this.value; });
+  document.addEventListener('keydown', function(e){
+    var tag = (e.target.tagName||'').toLowerCase();
+    if(tag==='input' || tag==='select' || tag==='textarea') return;
+    if(e.code==='Space'){ e.preventDefault(); toggle(); }
+    else if(e.key==='r'||e.key==='R') reset();
+    else if(e.key==='f'||e.key==='F') fs();
+    else if(e.key==='c'||e.key==='C') proj(!projOn());
+  });
+
+  // ---- parámetros por dirección: ?min=3&seg=0&aviso=30&nombre=...&auto=1&cerrar=1&sonido=0
+  if(q.get('min')!==null) $('min').value = Math.max(0, parseInt(q.get('min'),10)||0);
+  if(q.get('seg')!==null) $('seg').value = Math.max(0, Math.min(59, parseInt(q.get('seg'),10)||0));
+  if(q.get('aviso')){ var a = q.get('aviso'); if(![].some.call($('aviso').options, function(o){return o.value===a;})){ var op = document.createElement('option'); op.value = a; op.textContent = a+' s'; $('aviso').appendChild(op); } $('aviso').value = a; }
+  if(q.get('nombre')){ $('nombre').value = q.get('nombre').slice(0,80); $('who').textContent = $('nombre').value; }
+  if(q.get('sonido')==='0') $('sonido').checked = false;
+  if(q.get('cerrar')==='1') $('autoclose').checked = true;
+  reset();
+  if(q.get('auto')==='1'){ start(); }
+})();
+</script>
+</body>
+</html>
